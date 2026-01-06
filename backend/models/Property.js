@@ -1,0 +1,148 @@
+const mongoose = require("mongoose");
+
+const propertySchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "Please add a title"],
+      trim: true,
+      maxlength: [100, "Title cannot be more than 100 characters"],
+    },
+    description: {
+      type: String,
+      required: [true, "Please add a description"],
+      maxlength: [1000, "Description cannot be more than 1000 characters"],
+    },
+    address: {
+      street: { type: String, required: true },
+      city: { type: String, required: true },
+      state: { type: String, required: true },
+      zipCode: { type: String, required: true },
+      country: { type: String, required: true },
+    },
+    price: {
+      type: Number,
+      required: [true, "Please add a price"],
+      min: [0, "Price must be a positive number"],
+    },
+    totalTokens: {
+      type: Number,
+      required: [true, "Please specify total number of tokens"],
+      min: [1, "There must be at least 1 token"],
+    },
+    availableTokens: {
+      type: Number,
+      default: function () {
+        return this.totalTokens;
+      },
+    },
+    tokenPrice: {
+      type: Number,
+      required: [true, "Please specify price per token"],
+      min: [0.0001, "Token price must be greater than 0"],
+    },
+    images: [
+      {
+        url: String,
+        isMain: { type: Boolean, default: false },
+      },
+    ],
+    features: [
+      {
+        name: String,
+        value: String,
+        icon: String,
+      },
+    ],
+    propertyType: {
+      type: String,
+      required: true,
+      enum: [
+        "Apartment",
+        "House",
+        "Villa",
+        "Condo",
+        "Townhouse",
+        "Commercial",
+        "Land",
+        "Other",
+      ],
+    },
+    size: {
+      type: Number,
+      required: [true, "Please add property size in square feet"],
+    },
+    bedrooms: {
+      type: Number,
+      required: [true, "Please specify number of bedrooms"],
+    },
+    bathrooms: {
+      type: Number,
+      required: [true, "Please specify number of bathrooms"],
+    },
+    yearBuilt: {
+      type: Number,
+      required: [true, "Please specify year built"],
+    },
+    // Blockchain related fields
+    tokenId: {
+      type: Number,
+      default: null,
+    },
+    contractAddress: {
+      type: String,
+      default: null,
+    },
+    isListed: {
+      type: Boolean,
+      default: false,
+    },
+    // Additional metadata
+    owner: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
+
+// Indexes for better query performance
+propertySchema.index({ price: 1 });
+propertySchema.index({ "address.city": 1 });
+propertySchema.index({ propertyType: 1 });
+propertySchema.index({ isListed: 1 });
+
+// Virtual for property URL
+propertySchema.virtual("url").get(function () {
+  return `/api/v1/properties/${this._id}`;
+});
+
+// Update the updatedAt field before saving
+propertySchema.pre("save", function (next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+// Static method to get properties by owner
+propertySchema.statics.findByOwner = function (ownerId) {
+  return this.find({ owner: ownerId });
+};
+
+// Static method to get available properties
+propertySchema.statics.getAvailableProperties = function () {
+  return this.find({ isListed: true, availableTokens: { $gt: 0 } });
+};
+
+module.exports = mongoose.model("Property", propertySchema);
