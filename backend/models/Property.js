@@ -25,21 +25,21 @@ const propertySchema = new mongoose.Schema(
       required: [true, "Please add a price"],
       min: [0, "Price must be a positive number"],
     },
-    totalTokens: {
+    totalShares: {
       type: Number,
-      required: [true, "Please specify total number of tokens"],
-      min: [1, "There must be at least 1 token"],
+      required: [true, "Please specify total number of shares"],
+      min: [1, "There must be at least 1 share"],
     },
-    availableTokens: {
+    availableShares: {
       type: Number,
       default: function () {
-        return this.totalTokens;
+        return this.totalShares;
       },
     },
-    tokenPrice: {
+    sharePrice: {
       type: Number,
-      required: [true, "Please specify price per token"],
-      min: [0.0001, "Token price must be greater than 0"],
+      required: [true, "Please specify price per share"],
+      min: [0.0001, "Share price must be greater than 0"],
     },
     images: [
       {
@@ -92,6 +92,12 @@ const propertySchema = new mongoose.Schema(
     contractAddress: {
       type: String,
       default: null,
+      match: [/^0x[a-fA-F0-9]{40}$/, "Please provide a valid contract address"],
+    },
+    fractionalToken: {
+      type: String,
+      default: null,
+      match: [/^0x[a-fA-F0-9]{40}$/, "Please provide a valid token address"],
     },
     isListed: {
       type: Boolean,
