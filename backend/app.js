@@ -26,10 +26,6 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "hbs");
-
 // Middleware
 app.use(logger("dev"));
 app.use(express.json());
@@ -46,7 +42,25 @@ app.use(
   })
 );
 
+// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "public")));
+
+// Explicitly serve images from the images directory with proper caching
+const staticOptions = {
+  setHeaders: (res, path) => {
+    // Set proper cache headers for all static files
+    res.setHeader("Cache-Control", "public, max-age=31536000");
+  },
+};
+
+// Serve images from the public/images directory
+app.use(
+  "/images",
+  express.static(path.join(__dirname, "public/images"), staticOptions)
+);
+
+// For backward compatibility, also serve images from root
+app.use(express.static(path.join(__dirname, "public/images"), staticOptions));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
@@ -73,18 +87,21 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
+  // Send JSON error response for API
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    error: process.env.NODE_ENV === "development" ? err.stack : {},
+  });
 });
 
-// Error handling middleware
+// Error handling middleware (this is a duplicate, keeping the more detailed one below)
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({
+  res.status(err.status || 500).json({
     success: false,
-    message: "Server Error",
-    error: process.env.NODE_ENV === "development" ? err.message : {},
+    message: err.message || "Internal Server Error",
+    error: process.env.NODE_ENV === "development" ? err.stack : {},
   });
 });
 

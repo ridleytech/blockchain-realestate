@@ -17,6 +17,7 @@ import {
   FaCalendarAlt,
   FaMapMarkerAlt,
 } from "react-icons/fa";
+import { getImageUrl, getAllImageUrls } from "../utils/imageUtils";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -101,12 +102,12 @@ const PropertyDetail = () => {
         <Col lg={8}>
           {property.images && property.images.length > 0 ? (
             <Carousel className="mb-4">
-              {property.images.map((image, index) => (
+              {getAllImageUrls(property.images).map((imageUrl, index) => (
                 <Carousel.Item key={index}>
                   <div style={{ height: "500px", overflow: "hidden" }}>
                     <img
                       className="d-block w-100"
-                      src={image.url}
+                      src={imageUrl}
                       alt={`${property.title} - ${index + 1}`}
                       style={{
                         height: "100%",

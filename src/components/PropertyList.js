@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, Row, Col, Container, Spinner } from "react-bootstrap";
+import { getFirstImage } from "../utils/imageUtils";
 
 const PropertyList = () => {
   const [properties, setProperties] = useState([]);
@@ -56,7 +57,7 @@ const PropertyList = () => {
                 <div style={{ height: "200px", overflow: "hidden" }}>
                   <Card.Img
                     variant="top"
-                    src={property.images[0].url}
+                    src={getFirstImage(property.images)}
                     alt={property.title}
                     style={{
                       height: "100%",
