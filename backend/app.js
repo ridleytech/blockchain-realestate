@@ -12,9 +12,11 @@ const logger = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+const indexRouter = require("./routes/index");
+const usersRouter = require("./routes/users");
+const authRouter = require("./routes/auth");
 const propertyRoutes = require("./routes/propertyRoutes");
+const purchaseRoutes = require("./routes/purchaseRoutes");
 
 var app = express();
 
@@ -64,7 +66,10 @@ app.use(express.static(path.join(__dirname, "public/images"), staticOptions));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/properties", propertyRoutes);
+app.use("/api/purchase", purchaseRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Container,
@@ -9,6 +9,8 @@ import {
   Button,
   Spinner,
   Alert,
+  Modal,
+  Form,
 } from "react-bootstrap";
 import {
   FaBed,
@@ -16,37 +18,140 @@ import {
   FaRulerCombined,
   FaCalendarAlt,
   FaMapMarkerAlt,
+  FaEthereum,
+  FaPercentage,
 } from "react-icons/fa";
 import { getImageUrl, getAllImageUrls } from "../utils/imageUtils";
+import { purchaseShares, getCurrentAccount } from "../utils/blockchain";
+import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [shares, setShares] = useState(1);
+  const [purchasing, setPurchasing] = useState(false);
+  const [purchaseError, setPurchaseError] = useState("");
+  const [purchaseSuccess, setPurchaseSuccess] = useState("");
+  const [userShares, setUserShares] = useState(0);
 
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:4000/api/properties/${id}`
-        );
-        if (!response.ok) {
-          throw new Error("Property not found");
+        const [propertyRes, transactionsRes] = await Promise.all([
+          fetch(`http://localhost:4000/api/properties/${id}`),
+          fetch(`http://localhost:4000/api/purchase/property/${id}`),
+        ]);
+
+        if (!propertyRes.ok) throw new Error("Failed to fetch property");
+        if (!transactionsRes.ok)
+          throw new Error("Failed to fetch transactions");
+
+        const propertyData = await propertyRes.json();
+        const transactions = await transactionsRes.json();
+
+        // Calculate user's shares if logged in
+        if (currentUser) {
+          const userTransaction = transactions.find(
+            (tx) =>
+              tx.buyer?._id === currentUser.id && tx.status === "completed"
+          );
+
+          if (userTransaction) {
+            setUserShares(userTransaction.shares);
+          }
         }
-        const data = await response.json();
-        setProperty(data);
-        setLoading(false);
+
+        setProperty({
+          ...propertyData,
+          // Add any additional property processing here
+        });
       } catch (err) {
-        console.error("Error fetching property:", err);
         setError(err.message);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchProperty();
-  }, [id]);
+  }, [id, currentUser]);
+
+  const handlePurchase = async () => {
+    if (!currentUser) {
+      navigate("/login", { state: { from: `/properties/${id}` } });
+      return;
+    }
+
+    try {
+      setPurchasing(true);
+      setPurchaseError("");
+      setPurchaseSuccess("");
+
+      // Get current account from MetaMask
+      const account = await getCurrentAccount();
+      if (!account) {
+        throw new Error("Please connect your wallet");
+      }
+
+      // Calculate total cost in ETH
+      const totalCost = shares * property.sharePrice;
+
+      // Call blockchain function to purchase shares
+      const result = await purchaseShares(
+        property.fractionalToken,
+        shares,
+        totalCost
+      );
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to purchase shares");
+      }
+
+      // Record the transaction in our database
+      const response = await axios.post(
+        "http://localhost:4000/api/purchase",
+        {
+          propertyId: id,
+          shares,
+          transactionHash: result.transactionHash,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // Update UI
+      setUserShares((prev) => prev + shares);
+      setPurchaseSuccess(`Successfully purchased ${shares} shares!`);
+
+      // Update property data
+      const updatedProperty = { ...property };
+      updatedProperty.availableShares -= shares;
+      if (updatedProperty.availableShares === 0) {
+        updatedProperty.status = "sold";
+      }
+      setProperty(updatedProperty);
+
+      // Close modal after delay
+      setTimeout(() => {
+        setShowPurchaseModal(false);
+        setPurchaseSuccess("");
+      }, 3000);
+    } catch (error) {
+      console.error("Purchase error:", error);
+      setPurchaseError(error.message || "Failed to complete purchase");
+    } finally {
+      setPurchasing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -80,6 +185,12 @@ const PropertyDetail = () => {
       </Container>
     );
   }
+
+  // Calculate ownership percentage
+  const ownershipPercentage =
+    property.totalShares > 0
+      ? ((userShares / property.totalShares) * 100).toFixed(2)
+      : 0;
 
   return (
     <Container className="my-5">
@@ -214,10 +325,45 @@ const PropertyDetail = () => {
                 ${property.price.toLocaleString()}
               </h3>
 
+              <h2 className="mb-4">${property.price.toLocaleString()}</h2>
+
+              {property.availableShares > 0 ? (
+                <>
+                  <div className="mb-3">
+                    <p className="mb-1">
+                      <strong>Available Shares:</strong>{" "}
+                      {property.availableShares.toLocaleString()}
+                    </p>
+                    <p className="mb-1">
+                      <strong>Price per Share:</strong> $
+                      {property.sharePrice.toLocaleString()}
+                    </p>
+                    {userShares > 0 && (
+                      <p className="text-success mb-0">
+                        <FaPercentage className="me-1" />
+                        You own {userShares} shares ({ownershipPercentage}%)
+                      </p>
+                    )}
+                  </div>
+
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="w-100 mb-3"
+                    onClick={() => setShowPurchaseModal(true)}
+                    disabled={property.availableShares === 0}
+                  >
+                    {property.availableShares === 0
+                      ? "Sold Out"
+                      : "Purchase Shares"}
+                  </Button>
+                </>
+              ) : (
+                <Alert variant="info">
+                  This property is completely sold out.
+                </Alert>
+              )}
               <div className="d-grid gap-2 mb-4">
-                <Button variant="primary" size="lg" className="mb-2">
-                  Contact Agent
-                </Button>
                 <Button variant="outline-primary" size="lg">
                   Schedule a Tour
                 </Button>
@@ -266,6 +412,108 @@ const PropertyDetail = () => {
           </Card>
         </Col>
       </Row>
+
+      {/* Purchase Modal */}
+      <Modal
+        show={showPurchaseModal}
+        onHide={() => setShowPurchaseModal(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Purchase Shares</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {purchaseError && (
+            <Alert variant="danger" className="mb-3">
+              {purchaseError}
+            </Alert>
+          )}
+
+          {purchaseSuccess ? (
+            <Alert variant="success">{purchaseSuccess}</Alert>
+          ) : (
+            <>
+              <p>
+                You are about to purchase shares of{" "}
+                <strong>{property.title}</strong>.
+              </p>
+
+              <Form.Group className="mb-3">
+                <Form.Label>
+                  Number of Shares (Max: {property.availableShares})
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  min="1"
+                  max={property.availableShares}
+                  value={shares}
+                  onChange={(e) =>
+                    setShares(
+                      Math.min(
+                        parseInt(e.target.value) || 1,
+                        property.availableShares
+                      )
+                    )
+                  }
+                  disabled={purchasing}
+                />
+              </Form.Group>
+
+              <div className="bg-light p-3 rounded mb-3">
+                <div className="d-flex justify-content-between mb-2">
+                  <span>Price per Share:</span>
+                  <span>${property.sharePrice.toLocaleString()}</span>
+                </div>
+                <div className="d-flex justify-content-between fw-bold">
+                  <span>Total Cost:</span>
+                  <span>
+                    <FaEthereum className="me-1" />
+                    {(shares * property.sharePrice).toLocaleString()} ETH
+                  </span>
+                </div>
+              </div>
+
+              <Alert variant="info" className="small">
+                <strong>Note:</strong> This transaction will be processed on the
+                blockchain. Please confirm the transaction in your wallet when
+                prompted.
+              </Alert>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowPurchaseModal(false)}
+            disabled={purchasing}
+          >
+            Close
+          </Button>
+
+          {!purchaseSuccess && (
+            <Button
+              variant="primary"
+              onClick={handlePurchase}
+              disabled={purchasing || property.availableShares === 0}
+            >
+              {purchasing ? (
+                <>
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="me-2"
+                  />
+                  Processing...
+                </>
+              ) : (
+                "Confirm Purchase"
+              )}
+            </Button>
+          )}
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

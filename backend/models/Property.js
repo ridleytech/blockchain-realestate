@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const propertySchema = new mongoose.Schema(
   {
+    // Existing fields...
     title: {
       type: String,
       required: [true, "Please add a title"],
@@ -117,8 +118,32 @@ const propertySchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    // Ownership tracking
+    owners: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        shares: {
+          type: Number,
+          required: true,
+          min: [1, "Must have at least 1 share"],
+        },
+        purchaseDate: {
+          type: Date,
+          default: Date.now,
+        },
+        transactionHash: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
   },
   {
+    timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
@@ -147,8 +172,49 @@ propertySchema.statics.findByOwner = function (ownerId) {
 };
 
 // Static method to get available properties
-propertySchema.statics.getAvailableProperties = function () {
-  return this.find({ isListed: true, availableTokens: { $gt: 0 } });
+propertySchema.statics.getAvailableProperties = async function () {
+  return this.find({ availableShares: { $gt: 0 } });
 };
+
+// Method to check if a user owns any shares of this property
+propertySchema.methods.getUserOwnership = function (userId) {
+  const ownership = this.owners.find(
+    (owner) => owner.user.toString() === userId.toString()
+  );
+  return ownership ? ownership.shares : 0;
+};
+
+// Method to add or update ownership
+propertySchema.methods.updateOwnership = async function (
+  userId,
+  shares,
+  transactionHash
+) {
+  const ownerIndex = this.owners.findIndex(
+    (owner) => owner.user.toString() === userId.toString()
+  );
+
+  if (ownerIndex >= 0) {
+    // Update existing ownership
+    this.owners[ownerIndex].shares += shares;
+    this.owners[ownerIndex].purchaseDate = new Date();
+    this.owners[ownerIndex].transactionHash = transactionHash;
+  } else {
+    // Add new ownership
+    this.owners.push({
+      user: userId,
+      shares,
+      transactionHash,
+      purchaseDate: new Date(),
+    });
+  }
+
+  return this.save();
+};
+
+// Virtual for total shares owned (sum of all owners' shares)
+propertySchema.virtual("ownedShares").get(function () {
+  return this.owners.reduce((total, owner) => total + owner.shares, 0);
+});
 
 module.exports = mongoose.model("Property", propertySchema);
