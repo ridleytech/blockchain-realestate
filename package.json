@@ -3,15 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.1",
     "@openzeppelin/contracts": "^4.9.0",
-    "@truffle/hdwallet-provider": "^2.1.15",
-    "dotenv": "^16.3.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^13.5.0",
+    "@truffle/hdwallet-provider": "^2.1.15",
+    "bootstrap": "^5.3.8",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.3.1",
     "react": "^19.2.3",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.3",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^6.30.2",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -48,9 +56,9 @@
   "devDependencies": {
     "@openzeppelin/test-helpers": "^0.5.16",
     "chai": "^4.3.7",
-    "truffle": "^5.8.5",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
-    "eslint-plugin-mocha": "^11.2.0"
+    "eslint-plugin-mocha": "^11.2.0",
+    "truffle": "^5.8.5"
   }
 }

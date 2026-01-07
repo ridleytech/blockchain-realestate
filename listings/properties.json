@@ -1,0 +1,189 @@
+[
+  {
+    "title": "Beautiful Family Home in Kingwood",
+    "description": "Spacious 4-bedroom home with modern amenities, large backyard, and open floor plan. Perfect for families looking for comfort and style in a great neighborhood.",
+    "address": {
+      "street": "26036 Kings Mill Crest Dr",
+      "city": "Kingwood",
+      "state": "TX",
+      "zipCode": "77339",
+      "country": "USA"
+    },
+    "price": 485000,
+    "totalShares": 1000,
+    "sharesAvailable": 1000,
+    "sharePrice": 485,
+    "images": [
+      {
+        "url": "https://photos.zillowstatic.com/fp/2e83e1f4d6a0f5f5f5f5f5f5f5f5f5f5-cc_ft_1536.jpg",
+        "isMain": true
+      },
+      {
+        "url": "https://photos.zillowstatic.com/fp/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6-cc_ft_768.jpg",
+        "isMain": false
+      }
+    ],
+    "bedrooms": 4,
+    "bathrooms": 2.5,
+    "size": 2850,
+    "squareFeet": 2850,
+    "yearBuilt": 2005,
+    "propertyType": "House",
+    "status": "For Sale"
+  },
+  {
+    "title": "Modern Home in Humble",
+    "description": "Stunning 3-bedroom home featuring a modern design, updated kitchen, and beautiful landscaping. Close to schools and shopping centers.",
+    "address": {
+      "street": "3403 Willow Ridge Dr",
+      "city": "Humble",
+      "state": "TX",
+      "zipCode": "77339",
+      "country": "USA"
+    },
+    "price": 325000,
+    "totalShares": 1000,
+    "sharesAvailable": 1000,
+    "sharePrice": 325,
+    "images": [
+      {
+        "url": "https://photos.zillowstatic.com/fp/9i8h7g6f5e4d3c2b1a0z9y8x7w6v5u4t-cc_ft_1536.jpg",
+        "isMain": true
+      },
+      {
+        "url": "https://photos.zillowstatic.com/fp/3r4t5y6u7i8o9p0q1w2e3r4t5y6u7i8-cc_ft_768.jpg",
+        "isMain": false
+      }
+    ],
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "squareFeet": 2250,
+    "yearBuilt": 2010,
+    "propertyType": "House",
+    "status": "For Sale"
+  },
+  {
+    "title": "Luxury Home in Gated Community",
+    "description": "Elegant 5-bedroom home with high-end finishes, swimming pool, and spacious outdoor living area. Located in a prestigious gated community.",
+    "address": {
+      "street": "519 Trail Springs Ct",
+      "city": "Humble",
+      "state": "TX",
+      "zipCode": "77339",
+      "country": "USA"
+    },
+    "price": 675000,
+    "totalShares": 1500,
+    "sharesAvailable": 1500,
+    "sharePrice": 450,
+    "images": [
+      {
+        "url": "https://photos.zillowstatic.com/fp/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6-cc_ft_1536.jpg",
+        "isMain": true
+      },
+      {
+        "url": "https://photos.zillowstatic.com/fp/q1w2e3r4t5y6u7i8o9p0a1s2d3f4g5h6-cc_ft_768.jpg",
+        "isMain": false
+      }
+    ],
+    "bedrooms": 5,
+    "bathrooms": 3.5,
+    "squareFeet": 4200,
+    "yearBuilt": 2018,
+    "propertyType": "House",
+    "status": "For Sale"
+  },
+  {
+    "title": "Waterfront Property in Kingwood",
+    "description": "Stunning waterfront property with private dock, large windows with water views, and modern amenities. Perfect for those who love water activities.",
+    "address": {
+      "street": "3019 Brook Shore Ct",
+      "city": "Kingwood",
+      "state": "TX",
+      "zipCode": "77345",
+      "country": "USA"
+    },
+    "price": 789000,
+    "totalShares": 2000,
+    "sharesAvailable": 2000,
+    "sharePrice": 394.5,
+    "images": [
+      {
+        "url": "https://photos.zillowstatic.com/fp/z1x2c3v4b5n6m7q8w9e0r1t2y3u4i5o6-cc_ft_1536.jpg",
+        "isMain": true
+      },
+      {
+        "url": "https://photos.zillowstatic.com/fp/p0o9i8u7y6t5r4e3w2q1a2s3d4f5g6h7-cc_ft_768.jpg",
+        "isMain": false
+      }
+    ],
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "squareFeet": 3800,
+    "yearBuilt": 2015,
+    "propertyType": "House",
+    "status": "For Sale"
+  },
+  {
+    "title": "Spacious Family Home in Porter",
+    "description": "Beautifully maintained 4-bedroom home with open floor plan, modern kitchen, and large backyard. Great for entertaining and family living.",
+    "address": {
+      "street": "3310 Bellwick Chase Ln",
+      "city": "Porter",
+      "state": "TX",
+      "zipCode": "77365",
+      "country": "USA"
+    },
+    "price": 415000,
+    "totalShares": 1000,
+    "sharesAvailable": 1000,
+    "sharePrice": 415,
+    "images": [
+      {
+        "url": "https://photos.zillowstatic.com/fp/l1k2j3h4g5f6d7s8a9p0o9i8u7y6t5r4-cc_ft_1536.jpg",
+        "isMain": true
+      },
+      {
+        "url": "https://photos.zillowstatic.com/fp/3e4r5t6y7u8i9o0p1q2w3e4r5t6y7u8i-cc_ft_768.jpg",
+        "isMain": false
+      }
+    ],
+    "bedrooms": 4,
+    "bathrooms": 2.5,
+    "squareFeet": 2950,
+    "yearBuilt": 2012,
+    "propertyType": "House",
+    "status": "For Sale"
+  },
+  {
+    "title": "Elegant Home in Riverwood",
+    "description": "Stunning 5-bedroom home with luxurious finishes, gourmet kitchen, and resort-style backyard with pool. Located in the prestigious Riverwood community.",
+    "address": {
+      "street": "3510 Riverwood Park Dr",
+      "city": "Kingwood",
+      "state": "TX",
+      "zipCode": "77345",
+      "country": "USA"
+    },
+    "price": 925000,
+    "totalShares": 2500,
+    "sharesAvailable": 2500,
+    "sharePrice": 370,
+    "images": [
+      {
+        "url": "https://photos.zillowstatic.com/fp/9q8w7e6r5t4y3u2i1o0p9o8i7u6y5t4r3-cc_ft_1536.jpg",
+        "isMain": true
+      },
+      {
+        "url": "https://photos.zillowstatic.com/fp/2w3e4r5t6y7u8i9o0p1q2w3e4r5t6y7u-cc_ft_768.jpg",
+        "isMain": false
+      }
+    ],
+    "bedrooms": 5,
+    "bathrooms": 4.5,
+    "squareFeet": 4850,
+    "yearBuilt": 2019,
+    "propertyType": "House",
+    "status": "For Sale"
+  }
+]
