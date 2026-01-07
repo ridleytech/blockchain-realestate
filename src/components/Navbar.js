@@ -11,7 +11,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const location = useLocation();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -48,7 +48,13 @@ const Navbar = () => {
             <Nav.Link href="#contact">Contact</Nav.Link>
           </Nav>
           <div className="d-flex">
-            {currentUser ? (
+            {loading ? (
+              <div className="d-flex align-items-center">
+                <div className="spinner-border text-light" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : currentUser ? (
               <NavDropdown
                 title={
                   <>

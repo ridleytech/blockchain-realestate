@@ -34,15 +34,36 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// Enable CORS
-// Enable CORS for all routes
-app.use(
-  cors({
-    origin: "*", // Allow all origins for development
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// Enable CORS with credentials
+const allowedOrigins = [
+  "http://localhost:3000", // Your frontend URL
+  "http://localhost:4000", // Optional: Allow backend-to-backend if needed
+];
+
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg =
+        "The CORS policy for this site does not allow access from the specified Origin.";
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true, // This allows the session cookie to be sent back and forth
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Content-Range", "X-Content-Range"],
+};
+
+// Apply CORS with the above options
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options("*", cors(corsOptions));
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "public")));
@@ -86,28 +107,26 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-
-  // Send JSON error response for API
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-    error: process.env.NODE_ENV === "development" ? err.stack : {},
-  });
-});
-
-// Error handling middleware (this is a duplicate, keeping the more detailed one below)
+// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
+  console.error("Error:", err);
+
+  // Set status code from error or default to 500
+  const statusCode = err.statusCode || 500;
+
+  // Prepare error response
+  const errorResponse = {
     success: false,
     message: err.message || "Internal Server Error",
-    error: process.env.NODE_ENV === "development" ? err.stack : {},
-  });
+  };
+
+  // Add stack trace in development
+  if (process.env.NODE_ENV === "development") {
+    errorResponse.error = err.stack;
+  }
+
+  // Send response
+  res.status(statusCode).json(errorResponse);
 });
 
 // Server startup is handled in bin/www

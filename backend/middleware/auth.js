@@ -40,16 +40,18 @@ exports.protect = async (req, res, next) => {
       );
     }
 
+    // Handle both token formats: { id: user.id } and { user: { id: user.id } }
+    const userId = decoded.id || (decoded.user && decoded.user.id);
+
+    if (!userId) {
+      return next(new ErrorResponse("Invalid token format", 401));
+    }
+
     // Get user from the token and attach to request
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await User.findById(userId).select("-password");
 
     if (!user) {
       return next(new ErrorResponse("User not found with this id", 404));
-    }
-
-    // Check if user is active
-    if (!user.isActive) {
-      return next(new ErrorResponse("User account is not active", 401));
     }
 
     req.user = user;

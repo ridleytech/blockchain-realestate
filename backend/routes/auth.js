@@ -3,8 +3,8 @@ const auth = require("../middleware/auth");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
+const { check, validationResult } = require("express-validator");
 const ErrorResponse = require("../utils/errorResponse");
 
 // @route   POST api/auth/register
@@ -181,10 +181,25 @@ router.post(
 router.get("/me", auth.protect, async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
-    res.json(user);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
   } catch (err) {
-    console.error(err.message);
-    next(new ErrorResponse("Server error", 500));
+    console.error("Error in /me endpoint:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
   }
 });
 
