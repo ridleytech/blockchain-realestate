@@ -26,8 +26,11 @@ function App() {
             <Container className="py-4">
               <Routes>
                 <Route path="/" element={<PropertyList />} />
+                <Route path="/properties" element={<PropertyList />} />
                 <Route path="/properties/:id" element={<PropertyDetail />} />
-                {/* Add more routes as needed */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="*" element={<PropertyList />} />
               </Routes>
             </Container>
           </main>

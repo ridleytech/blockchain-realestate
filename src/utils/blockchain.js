@@ -64,19 +64,39 @@ const getFractionalTokenContract = (tokenAddress) => {
 // Purchase shares of a property
 const purchaseShares = async (tokenAddress, shares, ethAmount) => {
   try {
+    // Validate token address
+    if (!tokenAddress || !web3.utils.isAddress(tokenAddress)) {
+      throw new Error("Invalid token address provided");
+    }
+
     const accounts = await web3.eth.getAccounts();
+    if (!accounts || accounts.length === 0) {
+      throw new Error("No accounts found. Please connect your wallet.");
+    }
+
+    console.log("Using token address:", tokenAddress);
     const contract = getFractionalTokenContract(tokenAddress);
+
+    if (!contract || !contract.methods || !contract.methods.buyShares) {
+      console.error("Contract methods not properly initialized:", contract);
+      throw new Error(
+        "Failed to initialize contract. Please check the token address."
+      );
+    }
 
     // Convert ETH to Wei
     const amountInWei = web3.utils.toWei(ethAmount.toString(), "ether");
 
+    console.log("Estimating gas...");
     // Estimate gas
-    const gasEstimate = await contract.methods
-      .purchaseShares(shares)
-      .estimateGas({ from: accounts[0], value: amountInWei });
+    const gasEstimate = await contract.methods.buyShares(shares).estimateGas({
+      from: accounts[0],
+      value: amountInWei,
+    });
 
+    console.log("Sending transaction...");
     // Send transaction
-    const tx = await contract.methods.purchaseShares(shares).send({
+    const tx = await contract.methods.buyShares(shares).send({
       from: accounts[0],
       value: amountInWei,
       gas: Math.ceil(gasEstimate * 1.1), // Add 10% buffer

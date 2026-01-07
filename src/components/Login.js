@@ -1,30 +1,49 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Form, Button, Alert, Container, Card } from "react-bootstrap";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [successMessage, setSuccessMessage] = useState("");
+  const { login, error, clearError } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get the redirect path or default to home
+  const from = location.state?.from?.pathname || "/";
+
+  // Check for success message from registration
+  React.useEffect(() => {
+    if (location.state?.registrationSuccess) {
+      setSuccessMessage("Registration successful! Please log in.");
+      // Clear any previous errors
+      if (clearError) clearError();
+
+      // Pre-fill email if provided
+      if (location.state?.email) {
+        setEmail(location.state.email);
+      }
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      setError("");
       setLoading(true);
+      // Use the login function from AuthContext which already uses the correct API_URL
       await login(email, password);
-      navigate("/");
-    } catch (err) {
-      setError(
-        "Failed to log in: " + (err.response?.data?.message || err.message)
-      );
+      // Redirect to the previous page or home
+      navigate(from, { replace: true });
+    } catch (error) {
+      // Error is already handled in the AuthContext
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -36,6 +55,9 @@ const Login = () => {
         <Card>
           <Card.Body>
             <h2 className="text-center mb-4">Log In</h2>
+            {successMessage && (
+              <Alert variant="success">{successMessage}</Alert>
+            )}
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group id="email" className="mb-3">
@@ -45,6 +67,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={loading}
                 />
               </Form.Group>
               <Form.Group id="password" className="mb-3">
@@ -54,19 +77,20 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={loading}
                 />
               </Form.Group>
               <Button disabled={loading} className="w-100" type="submit">
-                Log In
+                {loading ? "Logging in..." : "Log In"}
               </Button>
             </Form>
             <div className="w-100 text-center mt-3">
-              <a href="/forgot-password">Forgot Password?</a>
+              <Link to="/forgot-password">Forgot Password?</Link>
             </div>
           </Card.Body>
         </Card>
         <div className="w-100 text-center mt-2">
-          Need an account? <a href="/register">Sign Up</a>
+          Need an account? <Link to="/register">Sign Up</Link>
         </div>
       </div>
     </Container>

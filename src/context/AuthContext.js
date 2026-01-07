@@ -1,41 +1,49 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 
+const API_URL = "http://localhost:4000";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const checkAuth = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setCurrentUser(userData);
+      } else {
+        localStorage.removeItem("token");
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      localStorage.removeItem("token");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Check if user is logged in
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          // Verify token with backend
-          const response = await fetch("/api/auth/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (response.ok) {
-            const userData = await response.json();
-            setCurrentUser(userData);
-          }
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     checkAuth();
   }, []);
 
   const login = async (email, password) => {
     try {
-      const response = await fetch("/api/auth/login", {
+      setError(null);
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,21 +54,34 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        // Handle different types of errors
+        if (response.status === 401) {
+          throw new Error(data.message || "Invalid email or password");
+        } else if (response.status === 400) {
+          throw new Error(data.message || "Invalid request");
+        } else {
+          throw new Error(data.message || "Login failed. Please try again.");
+        }
+      }
+
+      if (!data.token) {
+        throw new Error("No authentication token received");
       }
 
       localStorage.setItem("token", data.token);
       setCurrentUser(data.user);
-      return data;
+      return { success: true, user: data.user };
     } catch (error) {
       console.error("Login error:", error);
+      setError(error.message);
       throw error;
     }
   };
 
   const register = async (userData) => {
     try {
-      const response = await fetch("/api/auth/register", {
+      setError(null);
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,6 +100,7 @@ export const AuthProvider = ({ children }) => {
       return data;
     } catch (error) {
       console.error("Registration error:", error);
+      setError(error.message);
       throw error;
     }
   };
@@ -86,6 +108,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     setCurrentUser(null);
+    setError(null);
   };
 
   const value = {
@@ -94,6 +117,8 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     loading,
+    error,
+    checkAuth,
   };
 
   return (

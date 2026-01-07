@@ -43,6 +43,7 @@ const PropertyDetail = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
+        console.log("Fetching property data...");
         const [propertyRes, transactionsRes] = await Promise.all([
           fetch(`http://localhost:4000/api/properties/${id}`),
           fetch(`http://localhost:4000/api/purchase/property/${id}`),
@@ -54,6 +55,12 @@ const PropertyDetail = () => {
 
         const propertyData = await propertyRes.json();
         const transactions = await transactionsRes.json();
+
+        console.log("Property data received:", {
+          propertyData,
+          hasFractionalToken: !!propertyData.fractionalToken,
+          fractionalToken: propertyData.fractionalToken,
+        });
 
         // Calculate user's shares if logged in
         if (currentUser) {
@@ -101,12 +108,28 @@ const PropertyDetail = () => {
       // Calculate total cost in ETH
       const totalCost = shares * property.sharePrice;
 
+      console.log("Attempting to purchase shares with:", {
+        fractionalToken: property.fractionalToken,
+        shares,
+        totalCost,
+        propertyId: property._id,
+        propertyTitle: property.title,
+      });
+
+      if (!property.fractionalToken) {
+        throw new Error(
+          "This property is not yet available for fractional ownership. Please contact support."
+        );
+      }
+
       // Call blockchain function to purchase shares
       const result = await purchaseShares(
         property.fractionalToken,
         shares,
         totalCost
       );
+
+      console.log("Purchase result:", result);
 
       if (!result.success) {
         throw new Error(result.error || "Failed to purchase shares");
