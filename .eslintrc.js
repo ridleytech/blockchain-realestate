@@ -1,6 +1,15 @@
 module.exports = {
+  root: true,
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
   env: {
     node: true,
+    es6: true,
     mocha: true,
   },
   globals: {
@@ -14,6 +23,7 @@ module.exports = {
     web3: "readonly",
   },
   rules: {
-    // Add any custom rules here
+    "no-console": "off",
+    "no-unused-vars": ["warn", { args: "none" }],
   },
 };
