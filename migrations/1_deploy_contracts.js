@@ -1,4 +1,5 @@
 const PropertyNFT = artifacts.require("PropertyNFT");
+const FractionalToken = artifacts.require("FractionalToken");
 const FractionalTokenFactory = artifacts.require("FractionalTokenFactory");
 
 module.exports = async function (deployer, network, accounts) {
@@ -8,6 +9,10 @@ module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(PropertyNFT);
   const propertyNFT = await PropertyNFT.deployed();
   console.log("PropertyNFT deployed at:", propertyNFT.address);
+
+  await deployer.deploy(FractionalToken);
+  const fractionalToken = await FractionalToken.deployed();
+  console.log("FractionalToken deployed at:", fractionalToken.address);
 
   // Deploy FractionalTokenFactory contract
   await deployer.deploy(FractionalTokenFactory);

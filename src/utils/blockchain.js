@@ -163,6 +163,21 @@ const getPropertyDetails = async (tokenAddress) => {
   }
 };
 
+// Get current ETH price in USD
+const getEthPriceInUsd = async () => {
+  try {
+    const response = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+    );
+    const data = await response.json();
+    return data.ethereum.usd;
+  } catch (error) {
+    console.error("Error fetching ETH price:", error);
+    // Fallback price in case the API call fails
+    return 3000; // Adjust this as needed
+  }
+};
+
 export {
   web3,
   getCurrentAccount,
@@ -170,4 +185,5 @@ export {
   purchaseShares,
   getShareBalance,
   getPropertyDetails,
+  getEthPriceInUsd,
 };

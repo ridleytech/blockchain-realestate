@@ -174,180 +174,252 @@ router.post(
         });
       }
 
-      // Get the contract instance - use the contract name instead of address
+      // Get the contract instance
       const contract = getContract("FractionalToken", property.fractionalToken);
 
       // Log contract details for debugging
       console.log("Contract address:", property.fractionalToken);
       console.log("Contract methods:", Object.keys(contract.methods));
 
-      // Log additional contract state
-      // Add this after getting the contract instance
+      // Set default values in case contract calls fail
+      let name = "FractionalToken";
+      let symbol = "FT";
+      let totalSupply = "0";
+      let isTradable = false;
+      let contractPricePerShare =
+        property.pricePerShare?.toString() || "1000000000000000000"; // Use property price or default to 1 ETH
+
       try {
-        const totalSupply = await contract.methods.totalSupply().call();
-        const symbol = await contract.methods.symbol().call();
-        const name = await contract.methods.name().call();
-        const isTradable = await contract.methods.isTradable().call();
+        // Try to get contract state, but don't fail if it doesn't work
+        try {
+          name = (await contract.methods.name().call()) || name;
+        } catch (err) {
+          console.warn("Could not get token name, using default:", err.message);
+        }
+
+        try {
+          symbol = (await contract.methods.symbol().call()) || symbol;
+        } catch (err) {
+          console.warn(
+            "Could not get token symbol, using default:",
+            err.message
+          );
+        }
+
+        try {
+          const supply = await contract.methods.totalSupply().call();
+          if (supply) totalSupply = supply.toString();
+        } catch (err) {
+          console.warn(
+            "Could not get total supply, using default:",
+            err.message
+          );
+        }
+
+        try {
+          isTradable = await contract.methods.isTradable().call();
+        } catch (err) {
+          console.warn(
+            "Could not get isTradable, assuming false:",
+            err.message
+          );
+        }
+
+        try {
+          const price = await contract.methods.pricePerShare().call();
+          if (price) contractPricePerShare = price.toString();
+        } catch (err) {
+          console.warn(
+            "Could not get price per share, using default:",
+            err.message
+          );
+        }
 
         console.log("Contract state:", {
           name,
           symbol,
           totalSupply,
           isTradable,
+          pricePerShare: contractPricePerShare,
         });
-      } catch (err) {
-        console.error("Error getting contract state:", err);
-      }
 
-      // Get price per share from the contract with error handling
-      let pricePerShare;
-      try {
-        pricePerShare = await contract.methods.pricePerShare().call();
-        console.log("Price per share:", pricePerShare);
-      } catch (err) {
-        console.error("Error getting price per share:", err);
-        // Default to a reasonable value if we can't get the price
-        pricePerShare = "1000000000000000000"; // 1 ETH in wei as fallback
-        console.log("Using default price per share:", pricePerShare);
-      }
-
-      console.log("Transaction value:", tx.value.toString());
-      const expectedValue = BigInt(pricePerShare) * BigInt(1);
-      console.log("Expected value for 1 share:", expectedValue.toString());
-
-      // Verify the transaction value matches the price per share
-      if (BigInt(tx.value) !== expectedValue) {
-        return res.status(400).json({
-          msg: "Incorrect transaction value",
-          expected: expectedValue.toString(),
-          actual: tx.value.toString(),
-          note: "Expected value is based on price per share from contract or default fallback",
-        });
-      }
-
-      // Verify the transaction is for the correct contract and function
-      if (tx.to.toLowerCase() !== property.fractionalToken.toLowerCase()) {
-        return res.status(400).json({ msg: "Invalid token contract" });
-      }
-
-      // Verify the transaction is from the buyer's wallet
-      if (tx.from.toLowerCase() !== buyer.walletAddress.toLowerCase()) {
-        return res
-          .status(400)
-          .json({ msg: "Transaction sender does not match buyer" });
-      }
-
-      // The function signature was already verified above
-
-      // Update property ownership
-      await property.updateOwnership(buyerId, shares, transactionHash);
-
-      // Create transaction record
-      const transaction = new Transaction({
-        property: propertyId,
-        buyer: buyerId,
-        seller: property.lister._id, // Original lister is the seller
-        shares,
-        amount: shares * property.sharePrice,
-        transactionHash,
-        status: "completed",
-      });
-
-      await transaction.save();
-
-      res.json({
-        msg: "Purchase successful",
-        transaction: {
-          id: transaction._id,
-          shares,
-          amount: transaction.amount,
-          transactionHash,
-          timestamp: transaction.createdAt,
-        },
-        property: {
-          id: property._id,
-          availableShares: property.availableShares,
-          status: property.status,
-        },
-      });
-    } catch (err) {
-      console.error("Purchase processing error:", {
-        error: err.message,
-        stack: err.stack,
-        requestBody: req.body,
-        userId: req.user?.id,
-        propertyId: req.body.propertyId,
-      });
-
-      // Save failed transaction with proper error handling
-      try {
-        // Get fresh property data for the failed transaction
-        const property = propertyId
-          ? await Property.findById(propertyId)
-              .select("owner sharePrice title")
-              .lean()
-          : null;
-
-        if (property) {
-          const failedTx = new Transaction({
-            property: propertyId,
-            buyer: buyerId,
-            seller: property.owner?._id || null,
-            shares: parseInt(shares) || 0,
-            amount: (parseInt(shares) || 0) * (property.sharePrice || 0),
-            transactionHash: transactionHash || "unknown",
-            status: "failed",
-            error: err.message,
-            errorDetails: {
-              name: err.name,
-              message: err.message,
-              stack:
-                process.env.NODE_ENV === "development" ? err.stack : undefined,
-            },
+        // Check if trading is enabled
+        if (!isTradable) {
+          return res.status(400).json({
+            success: false,
+            message: "Trading is not enabled for this token",
           });
-
-          await failedTx.save();
-          console.log(`Failed transaction logged: ${failedTx._id}`);
-        } else {
-          console.error(
-            "Could not save failed transaction: Property not found",
-            {
-              propertyId,
-              error: err.message,
-            }
-          );
         }
-      } catch (saveErr) {
-        console.error("Failed to save failed transaction:", {
-          error: saveErr.message,
-          originalError: err.message,
+
+        // Calculate expected value based on actual shares being purchased
+        const pricePerShare = contractPricePerShare;
+        const expectedValue = BigInt(pricePerShare) * BigInt(shares);
+        const transactionValue = BigInt(tx.value);
+
+        console.log("Purchase details:", {
+          shares,
+          pricePerShare: pricePerShare.toString(),
+          expectedValue: expectedValue.toString(),
+          transactionValue: transactionValue.toString(),
+        });
+
+        // Verify the transaction value is sufficient
+        if (transactionValue < expectedValue) {
+          return res.status(400).json({
+            success: false,
+            message: "Insufficient payment",
+            required: expectedValue.toString(),
+            provided: transactionValue.toString(),
+          });
+        }
+
+        // Check if enough shares are available
+        const availableShares = BigInt(property.availableShares);
+        if (BigInt(shares) > availableShares) {
+          return res.status(400).json({
+            success: false,
+            message: `Only ${availableShares} shares available`,
+            available: availableShares.toString(),
+            requested: shares.toString(),
+          });
+        }
+
+        // Verify the transaction is from the buyer's wallet
+        if (tx.from.toLowerCase() !== buyer.walletAddress.toLowerCase()) {
+          return res.status(400).json({
+            success: false,
+            message: "Transaction sender does not match buyer",
+          });
+        }
+
+        // Verify the transaction is for the correct contract
+        if (tx.to.toLowerCase() !== property.fractionalToken.toLowerCase()) {
+          return res.status(400).json({
+            success: false,
+            message: "Transaction is not for the correct token contract",
+          });
+        }
+
+        // Update property ownership
+        await property.updateOwnership(buyerId, shares, transactionHash);
+
+        // Create transaction record
+        const transaction = new Transaction({
+          property: propertyId,
+          buyer: buyerId,
+          seller: property.lister?._id || null, // Original lister is the seller
+          shares,
+          amount: (shares * property.sharePrice).toString(),
+          transactionHash,
+          status: "completed",
+        });
+
+        await transaction.save();
+
+        // Update available shares
+        property.availableShares -= shares;
+        if (property.availableShares <= 0) {
+          property.isListed = false;
+        }
+        await property.save();
+
+        return res.json({
+          success: true,
+          message: "Purchase successful",
+          transaction: {
+            id: transaction._id,
+            shares,
+            amount: transaction.amount,
+            transactionHash,
+            timestamp: transaction.createdAt,
+          },
+          property: {
+            id: property._id,
+            availableShares: property.availableShares,
+            status: property.isListed ? "listed" : "sold_out",
+          },
+        });
+      } catch (error) {
+        console.error("Error processing purchase:", {
+          error: error.message,
+          stack: error.stack,
           propertyId,
           buyerId,
           transactionHash,
         });
-      }
 
-      // Provide more detailed error response
-      const statusCode = err.statusCode || 500;
-      const errorResponse = {
+        // Save failed transaction with proper error handling
+        try {
+          const failedTransaction = new Transaction({
+            property: propertyId,
+            buyer: buyerId,
+            seller: property?.lister?._id || null,
+            shares: parseInt(shares) || 0,
+            amount: (parseInt(shares) || 0) * (property?.sharePrice || 0),
+            transactionHash: transactionHash || "unknown",
+            status: "failed",
+            error: error.message,
+            errorDetails: {
+              name: error.name,
+              message: error.message,
+              stack:
+                process.env.NODE_ENV === "development"
+                  ? error.stack
+                  : undefined,
+            },
+          });
+
+          await failedTransaction.save();
+          console.log(`Failed transaction logged: ${failedTransaction._id}`);
+        } catch (saveError) {
+          console.error("Failed to save failed transaction:", {
+            error: saveError.message,
+            originalError: error.message,
+            propertyId,
+            buyerId,
+            transactionHash,
+          });
+        }
+
+        // Prepare error response
+        const statusCode = error.statusCode || 500;
+        const errorResponse = {
+          success: false,
+          message: error.userMessage || "Error processing purchase",
+          error:
+            process.env.NODE_ENV === "development"
+              ? error.message
+              : "An error occurred",
+          code: error.code || "PURCHASE_ERROR",
+        };
+
+        // Add validation error details if available
+        if (error.name === "ValidationError") {
+          errorResponse.errors = Object.values(error.errors || {}).map((e) => ({
+            field: e.path,
+            message: e.message,
+          }));
+        }
+
+        return res.status(statusCode).json(errorResponse);
+      }
+    } catch (error) {
+      console.error("Unexpected error in purchase route:", {
+        error: error.message,
+        stack: error.stack,
+        propertyId,
+        buyerId,
+        transactionHash,
+      });
+
+      return res.status(500).json({
         success: false,
-        message: err.userMessage || "Error processing purchase",
+        message: "An unexpected error occurred",
         error:
           process.env.NODE_ENV === "development"
-            ? err.message
-            : "An error occurred",
-        code: err.code || "PURCHASE_ERROR",
-      };
-
-      // Add validation error details if available
-      if (err.name === "ValidationError") {
-        errorResponse.errors = Object.values(err.errors).map((e) => ({
-          field: e.path,
-          message: e.message,
-        }));
-      }
-
-      return res.status(statusCode).json(errorResponse);
+            ? error.message
+            : "Internal server error",
+      });
     }
   }
 );

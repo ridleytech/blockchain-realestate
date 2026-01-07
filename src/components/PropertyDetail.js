@@ -22,7 +22,11 @@ import {
   FaPercentage,
 } from "react-icons/fa";
 import { getImageUrl, getAllImageUrls } from "../utils/imageUtils";
-import { purchaseShares, getCurrentAccount } from "../utils/blockchain";
+import {
+  purchaseShares,
+  getCurrentAccount,
+  getEthPriceInUsd,
+} from "../utils/blockchain";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
@@ -105,13 +109,17 @@ const PropertyDetail = () => {
         throw new Error("Please connect your wallet");
       }
 
-      // Calculate total cost in ETH
-      const totalCost = shares * property.sharePrice;
+      // Get current ETH price in USD and calculate total cost in ETH
+      const ethPriceInUsd = await getEthPriceInUsd();
+      const totalCostInUsd = shares * parseFloat(property.sharePrice);
+      const totalCostInEth = (totalCostInUsd / ethPriceInUsd).toFixed(8);
 
-      console.log("Attempting to purchase shares with:", {
-        fractionalToken: property.fractionalToken,
+      console.log("Purchase details:", {
         shares,
-        totalCost,
+        sharePrice: property.sharePrice,
+        ethPriceInUsd,
+        totalCostInUsd,
+        totalCostInEth,
         propertyId: property._id,
         propertyTitle: property.title,
       });
@@ -126,7 +134,7 @@ const PropertyDetail = () => {
       const result = await purchaseShares(
         property.fractionalToken,
         shares,
-        totalCost
+        totalCostInEth
       );
 
       console.log("Purchase result:", result);

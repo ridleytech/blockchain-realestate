@@ -1350,14 +1350,64 @@
   },
   "networks": {
     "5777": {
-      "events": {},
+      "events": {
+        "0x6136de33361bb8ce4f3a3ea89decaac3c615a7c8df7e6b97a9a720570ef5f96e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "propertyNFT",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "propertyTokenId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "fractionalToken",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "totalShares",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "pricePerShare",
+              "type": "uint256"
+            }
+          ],
+          "name": "FractionalTokenCreated",
+          "type": "event"
+        }
+      },
       "links": {},
-      "address": "0x7c3Ea942a1C42ea238150eb1Ed6b56213051c8D1",
-      "transactionHash": "0x971f21ff5bbb36aeec690be70c82259faa256466504e540a5ed9fca5f8307171"
+      "address": "0x5E529Ca5faa453eb6e5553ABb79BD88F167e5B78",
+      "transactionHash": "0x17a39513cf9aa9513b416114a7246f474e36070259c63e5a553f55ad34eecd90"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2026-01-07T20:02:48.180Z",
+  "updatedAt": "2026-01-07T21:44:04.130Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

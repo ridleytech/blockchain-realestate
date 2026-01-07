@@ -60,6 +60,7 @@
     "eslint": "^9.39.2",
     "eslint-plugin-mocha": "^11.2.0",
     "fs-extra": "^11.3.3",
+    "mongoose": "^9.1.2",
     "truffle": "^5.8.5"
   }
 }
