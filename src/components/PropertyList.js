@@ -133,7 +133,7 @@ const PropertyList = () => {
                 <div>
                   <FaDollarSign className="me-1 text-muted" />
                   <small className="text-muted">
-                    ${property.price?.toLocaleString()}
+                    {property.price?.toLocaleString()}
                   </small>
                 </div>
               </div>

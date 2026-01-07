@@ -44,7 +44,7 @@ Summary
 
 
 
-
+truffle migrate -f 2 --to 2 --network development
 
 
 (base) rr@Randalls-MacBook-Air blockchain-realestate % npm run migrate

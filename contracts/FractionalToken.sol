@@ -9,7 +9,7 @@ contract FractionalToken is ERC20, Ownable {
     address public propertyNFT;
     uint256 public propertyTokenId;
     uint256 public pricePerShare; // in wei
-    bool public isTradable = false;
+    bool public isTradable = true;
     address public propertyOwner;
 
     event SharesPurchased(address buyer, uint256 amount);
