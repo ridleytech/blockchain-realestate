@@ -9,15 +9,24 @@ const providerUrl =
 const web3 = new Web3(providerUrl);
 
 // Load contract ABIs
-const loadABI = (contractName) => {
+const loadABI = (contractNameOrAddress) => {
   try {
     const buildDir = path.join(__dirname, "../../build/contracts");
-    const artifact = JSON.parse(
-      fs.readFileSync(`${buildDir}/${contractName}.json`, "utf8")
-    );
+    let abiPath;
+
+    // Check if it's an address (starts with 0x and has 42 chars)
+    if (/^0x[a-fA-F0-9]{40}$/.test(contractNameOrAddress)) {
+      // For addresses, look for a file named after the contract address
+      abiPath = path.join(buildDir, `${contractNameOrAddress}.json`);
+    } else {
+      // For contract names, use the standard naming convention
+      abiPath = path.join(buildDir, `${contractNameOrAddress}.json`);
+    }
+
+    const artifact = JSON.parse(fs.readFileSync(abiPath, "utf8"));
     return artifact.abi;
   } catch (err) {
-    console.error(`Error loading ${contractName} ABI:`, err);
+    console.error(`Error loading ABI for ${contractNameOrAddress}:`, err);
     throw err;
   }
 };
