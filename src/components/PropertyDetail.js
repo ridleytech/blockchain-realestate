@@ -137,7 +137,7 @@ const PropertyDetail = () => {
 
       // Record the transaction in our database
       const response = await axios.post(
-        "http://localhost:4000/api/purchase",
+        "http://localhost:4000/api/purchase/",
         {
           propertyId: id,
           shares,

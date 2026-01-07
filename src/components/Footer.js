@@ -115,12 +115,6 @@ const Footer = () => {
               &copy; {currentYear} Blockchain Real Estate. All rights reserved.
             </p>
           </Col>
-          <Col md={6} className="text-center text-md-end">
-            <p className="mb-0 text-muted">
-              Made with <i className="fas fa-heart text-danger"></i> for the
-              future of real estate
-            </p>
-          </Col>
         </Row>
       </Container>
     </footer>

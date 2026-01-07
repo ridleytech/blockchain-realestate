@@ -104,12 +104,35 @@ const propertySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    // Additional metadata
-    owner: {
+    // Property lister (original lister)
+    lister: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
       required: true,
     },
+    // Current owners with their share counts
+    currentOwners: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        shares: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
+        purchaseDate: {
+          type: Date,
+          default: Date.now,
+        },
+        transactionHash: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now,
@@ -118,8 +141,8 @@ const propertySchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    // Ownership tracking
-    owners: [
+    // Historical ownership records (for tracking past transactions)
+    ownershipHistory: [
       {
         user: {
           type: mongoose.Schema.Types.ObjectId,
@@ -131,13 +154,18 @@ const propertySchema = new mongoose.Schema(
           required: true,
           min: [1, "Must have at least 1 share"],
         },
-        purchaseDate: {
-          type: Date,
-          default: Date.now,
+        transactionType: {
+          type: String,
+          enum: ["purchase", "sale", "transfer"],
+          required: true,
         },
         transactionHash: {
           type: String,
           required: true,
+        },
+        timestamp: {
+          type: Date,
+          default: Date.now,
         },
       },
     ],
@@ -178,30 +206,31 @@ propertySchema.statics.getAvailableProperties = async function () {
 
 // Method to check if a user owns any shares of this property
 propertySchema.methods.getUserOwnership = function (userId) {
-  const ownership = this.owners.find(
+  const owner = this.currentOwners.find(
     (owner) => owner.user.toString() === userId.toString()
   );
-  return ownership ? ownership.shares : 0;
+  return owner ? owner.shares : 0;
 };
 
-// Method to add or update ownership
+// Method to update ownership when shares are purchased
 propertySchema.methods.updateOwnership = async function (
   userId,
   shares,
   transactionHash
 ) {
-  const ownerIndex = this.owners.findIndex(
+  // Add to current owners
+  const ownerIndex = this.currentOwners.findIndex(
     (owner) => owner.user.toString() === userId.toString()
   );
 
   if (ownerIndex >= 0) {
     // Update existing ownership
-    this.owners[ownerIndex].shares += shares;
-    this.owners[ownerIndex].purchaseDate = new Date();
-    this.owners[ownerIndex].transactionHash = transactionHash;
+    this.currentOwners[ownerIndex].shares += shares;
+    this.currentOwners[ownerIndex].purchaseDate = new Date();
+    this.currentOwners[ownerIndex].transactionHash = transactionHash;
   } else {
-    // Add new ownership
-    this.owners.push({
+    // Add new owner
+    this.currentOwners.push({
       user: userId,
       shares,
       transactionHash,
@@ -209,12 +238,53 @@ propertySchema.methods.updateOwnership = async function (
     });
   }
 
+  // Add to ownership history
+  this.ownershipHistory.push({
+    user: userId,
+    shares,
+    transactionType: "purchase",
+    transactionHash,
+    timestamp: new Date(),
+  });
+
+  // Update available shares
+  this.availableShares -= shares;
+  if (this.availableShares === 0) {
+    this.isListed = false; // Mark as fully sold
+  }
+
+  return this.save();
+
   return this.save();
 };
 
-// Virtual for total shares owned (sum of all owners' shares)
-propertySchema.virtual("ownedShares").get(function () {
-  return this.owners.reduce((total, owner) => total + owner.shares, 0);
+// Virtual for total shares owned (sum of all current owners' shares)
+propertySchema.virtual("totalOwnedShares").get(function () {
+  return this.currentOwners.reduce((total, owner) => total + owner.shares, 0);
 });
+
+// Virtual to get the list of current shareholders
+propertySchema.virtual("shareholders").get(function () {
+  return this.currentOwners.map((owner) => ({
+    userId: owner.user,
+    shares: owner.shares,
+    ownershipPercentage: (owner.shares / this.totalShares) * 100,
+  }));
+});
+
+// Method to check if a user is a shareholder
+propertySchema.methods.isShareholder = function (userId) {
+  return this.currentOwners.some(
+    (owner) => owner.user.toString() === userId.toString()
+  );
+};
+
+// Method to get a user's share count
+propertySchema.methods.getUserShares = function (userId) {
+  const owner = this.currentOwners.find(
+    (owner) => owner.user.toString() === userId.toString()
+  );
+  return owner ? owner.shares : 0;
+};
 
 module.exports = mongoose.model("Property", propertySchema);

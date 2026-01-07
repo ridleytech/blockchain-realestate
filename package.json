@@ -59,6 +59,7 @@
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
     "eslint-plugin-mocha": "^11.2.0",
+    "fs-extra": "^11.3.3",
     "truffle": "^5.8.5"
   }
 }

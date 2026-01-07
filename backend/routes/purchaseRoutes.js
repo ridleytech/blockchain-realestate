@@ -21,8 +21,15 @@ router.post(
     ],
   ],
   async (req, res) => {
+    console.log("Purchase request received:", {
+      body: req.body,
+      user: req.user ? { id: req.user.id, email: req.user.email } : "No user",
+      headers: req.headers,
+    });
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log("Validation errors:", errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -30,9 +37,9 @@ router.post(
     const buyerId = req.user.id;
 
     try {
-      // Get property with owner populated
+      // Get property with lister populated
       const property = await Property.findById(propertyId).populate(
-        "owner",
+        "lister",
         "walletAddress"
       );
 
@@ -40,9 +47,16 @@ router.post(
         return res.status(404).json({ msg: "Property not found" });
       }
 
-      // Check if buyer is the owner
-      if (buyerId === property.owner._id.toString()) {
-        return res.status(400).json({ msg: "Cannot buy your own property" });
+      // Check if property is listed for sale
+      if (!property.isListed) {
+        return res.status(400).json({ msg: "Property is not listed for sale" });
+      }
+
+      // Check if buyer is the lister
+      if (buyerId === property.lister._id.toString()) {
+        return res
+          .status(400)
+          .json({ msg: "Cannot buy shares of your own property" });
       }
 
       // Check if enough shares are available
@@ -89,11 +103,14 @@ router.post(
         return res.status(400).json({ msg: "Invalid transaction function" });
       }
 
+      // Update property ownership
+      await property.updateOwnership(buyerId, shares, transactionHash);
+
       // Create transaction record
       const transaction = new Transaction({
         property: propertyId,
         buyer: buyerId,
-        seller: property.owner._id,
+        seller: property.lister._id, // Original lister is the seller
         shares,
         amount: shares * property.sharePrice,
         transactionHash,
@@ -101,16 +118,6 @@ router.post(
       });
 
       await transaction.save();
-
-      // Update property's available shares
-      property.availableShares -= shares;
-
-      // If no shares left, mark as sold
-      if (property.availableShares === 0) {
-        property.status = "sold";
-      }
-
-      await property.save();
 
       res.json({
         msg: "Purchase successful",
@@ -128,28 +135,42 @@ router.post(
         },
       });
     } catch (err) {
-      console.error(err.message);
+      console.error("Purchase error:", err.message);
 
-      // Save failed transaction if we have enough info
-      if (propertyId && buyerId) {
-        try {
+      // Save failed transaction with proper error handling
+      try {
+        // Get fresh property data for the failed transaction
+        const property = propertyId
+          ? await Property.findById(propertyId)
+              .select("owner sharePrice")
+              .lean()
+          : null;
+
+        if (property && property.owner) {
           const failedTx = new Transaction({
             property: propertyId,
             buyer: buyerId,
-            seller: property?.owner?._id,
-            shares: shares || 0,
-            amount: (shares || 0) * (property?.sharePrice || 0),
+            seller: property.owner._id || null,
+            shares: parseInt(shares) || 0,
+            amount: (parseInt(shares) || 0) * (property.sharePrice || 0),
             transactionHash: transactionHash || "unknown",
             status: "failed",
             error: err.message,
           });
           await failedTx.save();
-        } catch (saveErr) {
-          console.error("Failed to save failed transaction:", saveErr);
+        } else {
+          console.error(
+            "Could not save failed transaction: property or owner not found"
+          );
         }
+      } catch (saveErr) {
+        console.error("Failed to save failed transaction:", saveErr);
       }
 
-      res.status(500).send("Server error");
+      return res.status(500).json({
+        msg: "Error processing purchase",
+        error: err.message,
+      });
     }
   }
 );
