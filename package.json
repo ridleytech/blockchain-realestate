@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@openzeppelin/contracts": "^4.9.0",
+    "@truffle/hdwallet-provider": "^2.1.15",
+    "dotenv": "^16.3.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -16,7 +19,13 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "compile": "truffle compile",
+    "migrate": "truffle migrate --reset --network development",
+    "migrate:goerli": "truffle migrate --network goerli",
+    "test:truffle": "truffle test",
+    "console": "truffle console --network development",
+    "clean": "rm -rf build/"
   },
   "eslintConfig": {
     "extends": [
@@ -37,10 +46,11 @@
     ]
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
-    "@openzeppelin/contracts": "^5.4.0",
-    "@truffle/hdwallet-provider": "^2.1.15",
+    "@openzeppelin/test-helpers": "^0.5.16",
+    "chai": "^4.3.7",
+    "truffle": "^5.8.5",
     "dotenv": "^17.2.3",
-    "hardhat": "^2.4.1"
+    "eslint": "^9.39.2",
+    "eslint-plugin-mocha": "^11.2.0"
   }
 }

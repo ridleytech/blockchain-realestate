@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -24,7 +24,7 @@ contract FractionalToken is ERC20, Ownable {
         uint256 _pricePerShare,
         address _propertyNFT,
         address _propertyOwner
-    ) ERC20(name, symbol) Ownable(_propertyOwner) {
+    ) ERC20(name, symbol) {
         require(_totalShares > 0, "Total shares must be greater than 0");
         require(_pricePerShare > 0, "Price per share must be greater than 0");
         require(_propertyNFT != address(0), "Invalid property NFT address");
@@ -51,7 +51,7 @@ contract FractionalToken is ERC20, Ownable {
         emit TradingDisabled();
     }
 
-    function _update(
+    function _beforeTokenTransfer(
         address from,
         address to,
         uint256 amount
@@ -64,7 +64,7 @@ contract FractionalToken is ERC20, Ownable {
             }
         }
         
-        super._update(from, to, amount);
+        super._beforeTokenTransfer(from, to, amount);
     }
 
     function buyShares(uint256 numberOfShares) public payable {

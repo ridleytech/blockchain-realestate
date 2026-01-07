@@ -1,0 +1,43 @@
+1_deploy_contracts.js
+=====================
+
+   Deploying 'PropertyNFT'
+   -----------------------
+   > transaction hash:    0xbfa9d07a2790f7b9e9cf75196cf008aa75618cda7c8173315074a0aa5009274a
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x935DA24B8202Ce9a4216920A510C466363e29Ef9
+   > block number:        1
+   > block timestamp:     1767747563
+   > account:             0x265A708D38FF98098b4a15209437f8F13340f4F8
+   > balance:             99.96628806
+   > gas used:            1685597 (0x19b85d)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.03371194 ETH
+
+PropertyNFT deployed at: 0x935DA24B8202Ce9a4216920A510C466363e29Ef9
+
+   Deploying 'FractionalTokenFactory'
+   ----------------------------------
+   > transaction hash:    0x2189afaa690fa3fca74f9b6703fc5ef5b19d67185ca5f45f583526c35d9a75cd
+   > Blocks: 0            Seconds: 0
+   > contract address:    0xC9db47778ce9D3A69c8594C39f1667fD9124c6AC
+   > block number:        2
+   > block timestamp:     1767747563
+   > account:             0x265A708D38FF98098b4a15209437f8F13340f4F8
+   > balance:             99.9368228
+   > gas used:            1473263 (0x167aef)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.02946526 ETH
+
+FractionalTokenFactory deployed at: 0xC9db47778ce9D3A69c8594C39f1667fD9124c6AC
+Test property minted. Tx hash: 0x8afad3e9cd4e052fb51340929a531b547919dfabaa9d96574f2a71bf27ba94a4
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:           0.0631772 ETH
+
+Summary
+=======
+> Total deployments:   2
+> Final cost:          0.0631772 ETH

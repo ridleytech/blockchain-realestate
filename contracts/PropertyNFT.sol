@@ -1,12 +1,20 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract PropertyNFT is ERC721URIStorage, Ownable {
-    uint256 private _tokenIdCounter = 0;
+    // Token ID counter
+    uint256 private _tokenIdCounter = 1; // Start from 1
+
+    constructor() ERC721("RealEstateToken", "RET") Ownable() {}
+
+    // Override required by Solidity
+    function _burn(uint256 tokenId) internal override(ERC721URIStorage) {
+        super._burn(tokenId);
+    }
 
     // Mapping from token ID to property details
     struct Property {
@@ -31,8 +39,6 @@ contract PropertyNFT is ERC721URIStorage, Ownable {
     event PropertyListed(uint256 indexed tokenId, uint256 price, uint256 totalShares);
     event PropertyUnlisted(uint256 indexed tokenId);
 
-    constructor() ERC721("RealEstateToken", "RET") Ownable(msg.sender) {}
-
     // Mint a new property NFT
     function mintProperty(
         address to,
@@ -41,8 +47,8 @@ contract PropertyNFT is ERC721URIStorage, Ownable {
         uint256 size,
         string memory tokenUri
     ) public onlyOwner returns (uint256) {
-        _tokenIdCounter++;
         uint256 newTokenId = _tokenIdCounter;
+        _tokenIdCounter++;
         
         _safeMint(to, newTokenId);
         _setTokenURI(newTokenId, tokenUri);
@@ -89,5 +95,4 @@ contract PropertyNFT is ERC721URIStorage, Ownable {
         properties[tokenId].isListed = false;
         emit PropertyUnlisted(tokenId);
     }
-
 }
