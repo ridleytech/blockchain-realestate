@@ -2,6 +2,11 @@
 
 A decentralized real estate investment platform that enables fractional ownership of properties using blockchain technology. This platform allows users to buy and sell shares of real estate properties as non-fungible tokens (NFTs), making real estate investment more accessible and liquid.
 
+<div align="center">
+  <img src="assets/web-screenshot.png" alt="Blockchain Real Estate Platform Screenshot" width="800" />
+  <p><em>Blockchain Real Estate Platform - Modern Web Interface</em></p>
+</div>
+
 ## ✨ Features
 
 ### 🏗️ Property Management
@@ -104,12 +109,16 @@ A decentralized real estate investment platform that enables fractional ownershi
 - ERC-721 non-fungible token for unique property representation
 - Implements OpenZeppelin's ERC721 and ERC721URIStorage
 - Features:
+
   - Unique token IDs for each property
   - Metadata storage with IPFS support
   - Ownership history tracking
   - Integration with FractionalToken for share management
   - Batch operations for efficiency
   - Real-time transaction tracking
+
+  ### Frontend
+
   - Enhanced property search with advanced filters
   - Mobile responsiveness
   - Performance optimizations for faster loading
