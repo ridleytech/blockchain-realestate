@@ -2,58 +2,67 @@ import Web3 from "web3";
 import FractionalTokenABI from "../contracts/FractionalToken.json";
 
 let web3;
+let isInitialized = false;
 
 // Safe wrapper for eth_requestAccounts
 const safeRequestAccounts = async () => {
   try {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    return true;
+    if (window.ethereum) {
+      return await window.ethereum.request({ method: "eth_requestAccounts" });
+    }
+    return [];
   } catch (error) {
-    console.warn("User denied account access or popup was closed");
-    return false;
+    console.error("Error requesting accounts:", error);
+    return [];
   }
 };
 
 // Initialize Web3
-if (typeof window !== "undefined" && window.ethereum) {
-  (async () => {
+const initWeb3 = async () => {
+  if (isInitialized) return web3;
+
+  if (typeof window !== "undefined" && window.ethereum) {
     try {
-      const accountsConnected = await safeRequestAccounts();
-      if (accountsConnected) {
-        web3 = new Web3(window.ethereum);
-      } else {
-        // Fallback to read-only mode
-        web3 = new Web3(
-          new Web3.providers.HttpProvider(
-            process.env.REACT_APP_BLOCKCHAIN_PROVIDER_URL ||
-              "http://localhost:7545"
-          )
-        );
-      }
+      const accounts = await safeRequestAccounts();
+      web3 = new Web3(window.ethereum);
+      // Request account access if needed
+      await window.ethereum.enable();
+      isInitialized = true;
+      return web3;
     } catch (error) {
-      console.error("Error initializing Web3:", error);
-      // Fallback to read-only mode
-      web3 = new Web3(
-        new Web3.providers.HttpProvider(
-          process.env.REACT_APP_BLOCKCHAIN_PROVIDER_URL ||
-            "http://localhost:7545"
-        )
-      );
+      console.error("Error initializing Web3 with MetaMask:", error);
+      // Fall through to read-only mode
     }
-  })();
-} else {
+  }
+
   // Fallback to read-only mode
   web3 = new Web3(
     new Web3.providers.HttpProvider(
       process.env.REACT_APP_BLOCKCHAIN_PROVIDER_URL || "http://localhost:7545"
     )
   );
+  isInitialized = true;
+  return web3;
+};
+
+// Initialize web3 immediately if in browser
+if (typeof window !== "undefined") {
+  initWeb3().catch(console.error);
 }
 
 // Get the current account
 const getCurrentAccount = async () => {
-  const accounts = await web3.eth.getAccounts();
-  return accounts[0];
+  try {
+    await initWeb3(); // Ensure web3 is initialized
+    const accounts = await web3.eth.getAccounts();
+    if (!accounts || accounts.length === 0) {
+      throw new Error("No accounts found. Please connect your wallet.");
+    }
+    return accounts[0];
+  } catch (error) {
+    console.error("Error getting current account:", error);
+    throw error;
+  }
 };
 
 // Get the FractionalToken contract instance
@@ -75,39 +84,85 @@ const purchaseShares = async (tokenAddress, shares) => {
     }
 
     console.log("Using token address:", tokenAddress);
+
+    // Get contract instance with proper ABI
     const contract = getFractionalTokenContract(tokenAddress);
 
-    if (!contract?.methods?.buyShares) {
-      throw new Error(
-        "Failed to initialize contract. Please check the token address."
-      );
+    if (!contract || !contract.methods) {
+      throw new Error("Failed to initialize contract instance");
+    }
+
+    // Verify the contract has the required methods
+    const requiredMethods = ["buyShares", "pricePerShare"];
+    for (const method of requiredMethods) {
+      if (typeof contract.methods[method] !== "function") {
+        throw new Error(`Contract is missing required method: ${method}`);
+      }
+    }
+
+    // Convert shares to a number and validate
+    const sharesNum = Number(shares);
+    if (isNaN(sharesNum) || sharesNum <= 0) {
+      throw new Error("Invalid number of shares");
     }
 
     // Get the price per share from the contract
-    const pricePerShare = await contract.methods.pricePerShare().call();
-    const totalPriceInWei = web3.utils
-      .toBN(pricePerShare)
-      .mul(web3.utils.toBN(shares));
+    const pricePerShare = await contract.methods.pricePerShare().call({
+      from: accounts[0],
+    });
+
+    if (!pricePerShare) {
+      throw new Error("Failed to get price per share from contract");
+    }
+
+    const pricePerShareBN = web3.utils.toBN(pricePerShare);
+    const sharesBN = web3.utils.toBN(sharesNum.toString());
+    const totalPriceInWei = pricePerShareBN.mul(sharesBN);
 
     console.log("Purchase details:", {
-      shares,
+      shares: sharesNum,
       pricePerShare: pricePerShare.toString(),
+      priceInEth: web3.utils.fromWei(pricePerShare, "ether"),
       totalPriceInWei: totalPriceInWei.toString(),
+      totalPriceInEth: web3.utils.fromWei(totalPriceInWei.toString(), "ether"),
       contractAddress: tokenAddress,
+      account: accounts[0],
     });
+
+    // First check if the contract is tradable
+    const isTradable = await contract.methods
+      .isTradable()
+      .call({ from: accounts[0] });
+    if (!isTradable) {
+      throw new Error("Trading is not enabled for this token");
+    }
+
+    // Prepare the transaction
+    const method = contract.methods.buyShares(sharesNum.toString());
 
     // Estimate gas
-    const gasEstimate = await contract.methods.buyShares(shares).estimateGas({
-      from: accounts[0],
-      value: totalPriceInWei.toString(),
-    });
+    const gasEstimate = await method
+      .estimateGas({
+        from: accounts[0],
+        value: totalPriceInWei.toString(),
+      })
+      .catch((err) => {
+        console.error("Gas estimation failed:", err);
+        throw new Error(`Gas estimation failed: ${err.message}`);
+      });
+
+    console.log("Gas estimate:", gasEstimate);
 
     // Send transaction with exact ETH amount
-    const tx = await contract.methods.buyShares(shares).send({
+    const tx = await method.send({
       from: accounts[0],
       value: totalPriceInWei.toString(),
-      gas: Math.ceil(gasEstimate * 1.1), // Add 10% buffer
+      gas: Math.ceil(gasEstimate * 1.2), // Add 20% buffer for safety
     });
+
+    if (!tx || !tx.transactionHash) {
+      throw new Error("Transaction failed: No transaction hash received");
+    }
 
     return {
       success: true,
