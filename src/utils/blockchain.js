@@ -62,7 +62,7 @@ const getFractionalTokenContract = (tokenAddress) => {
 };
 
 // Purchase shares of a property
-const purchaseShares = async (tokenAddress, shares, ethAmount) => {
+const purchaseShares = async (tokenAddress, shares) => {
   try {
     // Validate token address
     if (!tokenAddress || !web3.utils.isAddress(tokenAddress)) {
@@ -77,28 +77,35 @@ const purchaseShares = async (tokenAddress, shares, ethAmount) => {
     console.log("Using token address:", tokenAddress);
     const contract = getFractionalTokenContract(tokenAddress);
 
-    if (!contract || !contract.methods || !contract.methods.buyShares) {
-      console.error("Contract methods not properly initialized:", contract);
+    if (!contract?.methods?.buyShares) {
       throw new Error(
         "Failed to initialize contract. Please check the token address."
       );
     }
 
-    // Convert ETH to Wei
-    const amountInWei = web3.utils.toWei(ethAmount.toString(), "ether");
+    // Get the price per share from the contract
+    const pricePerShare = await contract.methods.pricePerShare().call();
+    const totalPriceInWei = web3.utils
+      .toBN(pricePerShare)
+      .mul(web3.utils.toBN(shares));
 
-    console.log("Estimating gas...");
+    console.log("Purchase details:", {
+      shares,
+      pricePerShare: pricePerShare.toString(),
+      totalPriceInWei: totalPriceInWei.toString(),
+      contractAddress: tokenAddress,
+    });
+
     // Estimate gas
     const gasEstimate = await contract.methods.buyShares(shares).estimateGas({
       from: accounts[0],
-      value: amountInWei,
+      value: totalPriceInWei.toString(),
     });
 
-    console.log("Sending transaction...");
-    // Send transaction
+    // Send transaction with exact ETH amount
     const tx = await contract.methods.buyShares(shares).send({
       from: accounts[0],
-      value: amountInWei,
+      value: totalPriceInWei.toString(),
       gas: Math.ceil(gasEstimate * 1.1), // Add 10% buffer
     });
 
@@ -137,22 +144,30 @@ const getShareBalance = async (tokenAddress, userAddress) => {
 // Get property details from token contract
 const getPropertyDetails = async (tokenAddress) => {
   try {
+    if (!tokenAddress || !web3.utils.isAddress(tokenAddress)) {
+      throw new Error("Invalid token address");
+    }
+
     const contract = getFractionalTokenContract(tokenAddress);
-    const [name, symbol, totalSupply, sharePrice] = await Promise.all([
-      contract.methods.name().call(),
-      contract.methods.symbol().call(),
-      contract.methods.totalSupply().call(),
-      contract.methods.sharePrice().call(),
-    ]);
+    const [name, symbol, totalSupply, pricePerShare, isTradable, owner] =
+      await Promise.all([
+        contract.methods.name().call(),
+        contract.methods.symbol().call(),
+        contract.methods.totalSupply().call(),
+        contract.methods.pricePerShare().call(),
+        contract.methods.isTradable().call(),
+        contract.methods.owner().call(),
+      ]);
 
     return {
-      success: true,
-      data: {
-        name,
-        symbol,
-        totalSupply: parseInt(totalSupply, 10),
-        sharePrice: parseFloat(web3.utils.fromWei(sharePrice, "ether")),
-      },
+      name,
+      symbol,
+      totalSupply: web3.utils.fromWei(totalSupply, "ether"),
+      pricePerShare: web3.utils.fromWei(pricePerShare, "ether"),
+      isTradable,
+      owner,
+      totalSupplyNum: parseInt(totalSupply, 10),
+      sharePrice: parseFloat(web3.utils.fromWei(pricePerShare, "ether")),
     };
   } catch (error) {
     console.error("Error getting property details:", error);

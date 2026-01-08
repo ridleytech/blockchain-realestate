@@ -1,44 +1,44 @@
+// backend/scripts/updatePropertyAddresses.js
 const mongoose = require("mongoose");
 const Property = require("../models/Property");
-require("dotenv").config();
 
-// Contract addresses from deployment
-const CONFIG = {
-  propertyNFT: "0x30fc2B1cB86065Ad916122211e85bf3e44559AB6",
-  fractionalTokenFactory: "0x85a013d3A43f1E4429C30d0a631d844b847B0A75",
-  properties: [
-    {
-      title: "Beautiful Family Home in Kingwood",
-      tokenAddress: "0x8AfB053B3E4A3486d9A57060F46Fff586351FA79",
-      tokenId: 1,
-    },
-    {
-      title: "Modern Home in Humble",
-      tokenAddress: "0x7a68596aD0BD9C0246C8E04f7c1b44C1337E01d9",
-      tokenId: 2,
-    },
-    {
-      title: "Luxury Home in Gated Community",
-      tokenAddress: "0xa82a2989535b35637c70200F0e773c5bE7d69d34",
-      tokenId: 3,
-    },
-    {
-      title: "Waterfront Property in Kingwood",
-      tokenAddress: "0x478E672d35a3CFE2f7B936088323b68dF369AF02",
-      tokenId: 4,
-    },
-    {
-      title: "Spacious Family Home in Porter",
-      tokenAddress: "0x6cE845469311ebdA1377FE73F25e15b5ef109F1c",
-      tokenId: 5,
-    },
-    {
-      title: "Elegant Home in Riverwood",
-      tokenAddress: "0xd69094D88E7A9d1cf0941e2647980233C9A29e26",
-      tokenId: 6,
-    },
-  ],
-};
+// Token addresses from your Ganache deployment
+const properties = [
+  {
+    title: "Beautiful Family Home in Kingwood",
+    tokenAddress: "0xf7ad08Abb0eC9f65Cca25d1972C90f3b769FdeE1",
+    tokenId: 1,
+  },
+  {
+    title: "Modern Home in Humble",
+    tokenAddress: "0x2b79aC5aaDc3ae70FAb8d841645F0Ff0a3eA81fC",
+    tokenId: 2,
+  },
+  {
+    title: "Luxury Home in Gated Community",
+    tokenAddress: "0x513943acB5E43e58aD2E00EE301De961dcCBdBd1",
+    tokenId: 3,
+  },
+  {
+    title: "Waterfront Property in Kingwood",
+    tokenAddress: "0x4bAc01E86b4964a8C7d4fd3C0Ca0cF9580bA864B",
+    tokenId: 4,
+  },
+  {
+    title: "Spacious Family Home in Porter",
+    tokenAddress: "0x892679a93FA17B8443c60edd768E632aC8cDD899",
+    tokenId: 5,
+  },
+  {
+    title: "Elegant Home in Riverwood",
+    tokenAddress: "0x5d019E4e0a0751E751DEa31f7B0D01f3A4bC2626",
+    tokenId: 6,
+  },
+];
+
+// The FractionalTokenFactory address from your .env
+const FRACTIONAL_TOKEN_FACTORY_ADDRESS =
+  "0xb2fb91BB78aCaD92ceDdc520e684B3a1f30E2752";
 
 async function updateProperties() {
   try {
@@ -54,70 +54,45 @@ async function updateProperties() {
 
     console.log("Connected to MongoDB");
 
-    // Update all properties with the contract address
-    const updateResult = await Property.updateMany(
-      {},
-      {
-        $set: {
-          contractAddress: CONFIG.propertyNFT,
-          updatedAt: new Date(),
-        },
-      }
-    );
-
-    console.log(
-      `Updated contract address for ${updateResult.nModified} properties`
-    );
-
-    // Update each property with its specific token address and ID
-    for (const prop of CONFIG.properties) {
-      const result = await Property.updateOne(
-        { title: prop.title },
+    // Update each property with its token address
+    for (const prop of properties) {
+      const updated = await Property.findOneAndUpdate(
+        { tokenId: prop.tokenId },
         {
-          $set: {
-            fractionalToken: prop.tokenAddress,
-            tokenId: prop.tokenId,
-            updatedAt: new Date(),
-          },
-        }
+          fractionalToken: prop.tokenAddress,
+          contractAddress: FRACTIONAL_TOKEN_FACTORY_ADDRESS, // Use the factory address here
+        },
+        { new: true }
       );
 
-      if (result.nModified === 0) {
-        console.warn(`⚠️  No property found with title: ${prop.title}`);
-      } else {
+      if (updated) {
+        console.log(`✅ Updated ${prop.title}`);
+        console.log(`   - fractionalToken: ${prop.tokenAddress}`);
         console.log(
-          `✅ Updated ${prop.title} with token address: ${prop.tokenAddress}`
+          `   - contractAddress: ${FRACTIONAL_TOKEN_FACTORY_ADDRESS}`
         );
+      } else {
+        console.log(`❌ Property with tokenId ${prop.tokenId} not found`);
       }
     }
 
     console.log("\n✅ All properties updated successfully!");
 
-    // Verify the updates
+    // Verify updates
     console.log("\nVerifying updates...");
-    const properties = await Property.find(
-      {},
-      "title contractAddress fractionalToken tokenId"
-    ).lean();
-    console.table(
-      properties.map((p) => ({
-        title: p.title,
-        contractAddress: p.contractAddress ? "✅" : "❌",
-        fractionalToken: p.fractionalToken ? "✅" : "❌",
-        tokenId: p.tokenId || "❌",
-      }))
-    );
+    const allProperties = await Property.find({}).sort("tokenId");
+    const tableData = allProperties.map((prop) => ({
+      title: prop.title,
+      contractAddress: prop.contractAddress ? "✅" : "❌",
+      fractionalToken: prop.fractionalToken ? "✅" : "❌",
+      tokenId: prop.tokenId,
+    }));
+    console.table(tableData);
   } catch (error) {
-    console.error("❌ Error updating properties:", error.message);
-    if (error.errors) {
-      console.error("Validation errors:", error.errors);
-    }
-    process.exit(1);
+    console.error("Error updating properties:", error);
   } finally {
-    await mongoose.disconnect();
-    process.exit(0);
+    mongoose.connection.close();
   }
 }
 
-// Run the script
 updateProperties();

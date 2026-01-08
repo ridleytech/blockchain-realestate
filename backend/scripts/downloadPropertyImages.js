@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
-const properties = require("../listings/properties.json");
+const properties = require("../../listings/properties.json");
 
 // Directory to save property images
 const assetsDir = path.join(__dirname, "..", "public", "assets", "properties");

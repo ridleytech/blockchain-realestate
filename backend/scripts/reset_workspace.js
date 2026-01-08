@@ -84,7 +84,7 @@ async function resetDatabase() {
     console.log("Connected to MongoDB");
 
     // Import the Property model
-    const Property = require("../backend/models/Property");
+    const Property = require("../models/Property");
 
     // Reset token IDs for all properties
     await Property.updateMany(
