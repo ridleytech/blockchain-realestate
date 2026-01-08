@@ -117,14 +117,14 @@ A decentralized real estate investment platform that enables fractional ownershi
   - Batch operations for efficiency
   - Real-time transaction tracking
 
-  ### Frontend
+### Frontend
 
-  - Enhanced property search with advanced filters
-  - Mobile responsiveness
-  - Performance optimizations for faster loading
-  - Portfolio analytics dashboard
-  - User profile management
-  - Transaction history with blockchain verification
+- Enhanced property search with advanced filters
+- Mobile responsiveness
+- Performance optimizations for faster loading
+- Portfolio analytics dashboard
+- User profile management
+- Transaction history with blockchain verification
 
 ## 📧 Contact
 
