@@ -11,7 +11,7 @@ const Footer = () => {
         <Row>
           <Col md={4} className="mb-4 mb-md-0">
             <h5>Blockchain Real Estate</h5>
-            <p className="text-muted">
+            <p className="text-muted small">
               Revolutionizing real estate investment through blockchain
               technology. Own a piece of prime property with just a few clicks.
             </p>
@@ -33,29 +33,29 @@ const Footer = () => {
 
           <Col md={2} className="mb-4 mb-md-0">
             <h5>Explore</h5>
-            <ul className="list-unstyled">
-              <li>
-                <Link to="/" className="text-muted">
+            <ul className="list-unstyled small text-center text-md-start">
+              <li className="mb-1">
+                <Link to="/" className="text-muted d-block">
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/properties" className="text-muted">
+                <Link to="/properties" className="text-muted d-block">
                   Properties
                 </Link>
               </li>
               <li>
-                <Link to="/how-it-works" className="text-muted">
+                <Link to="/how-it-works" className="text-muted d-block">
                   How It Works
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-muted">
+                <Link to="/about" className="text-muted d-block">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-muted">
+                <Link to="/contact" className="text-muted d-block">
                   Contact
                 </Link>
               </li>
@@ -64,24 +64,24 @@ const Footer = () => {
 
           <Col md={3} className="mb-4 mb-md-0">
             <h5>Legal</h5>
-            <ul className="list-unstyled">
+            <ul className="list-unstyled text-center text-md-start">
               <li>
-                <Link to="/privacy" className="text-muted">
+                <Link to="/privacy" className="text-muted d-block">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-muted">
+                <Link to="/terms" className="text-muted d-block">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/disclaimer" className="text-muted">
+                <Link to="/disclaimer" className="text-muted d-block">
                   Disclaimer
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-muted">
+                <Link to="/faq" className="text-muted d-block">
                   FAQ
                 </Link>
               </li>
@@ -113,12 +113,6 @@ const Footer = () => {
           <Col md={6} className="text-center text-md-start">
             <p className="mb-0 text-muted">
               &copy; {currentYear} Blockchain Real Estate. All rights reserved.
-            </p>
-          </Col>
-          <Col md={6} className="text-center text-md-end">
-            <p className="mb-0 text-muted">
-              Made with <i className="fas fa-heart text-danger"></i> for the
-              future of real estate
             </p>
           </Col>
         </Row>

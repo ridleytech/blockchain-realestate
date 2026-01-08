@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const propertySchema = new mongoose.Schema(
   {
+    // Existing fields...
     title: {
       type: String,
       required: [true, "Please add a title"],
@@ -103,12 +104,35 @@ const propertySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    // Additional metadata
-    owner: {
+    // Property lister (original lister)
+    lister: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
       required: true,
     },
+    // Current owners with their share counts
+    currentOwners: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        shares: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
+        purchaseDate: {
+          type: Date,
+          default: Date.now,
+        },
+        transactionHash: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now,
@@ -117,8 +141,37 @@ const propertySchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    // Historical ownership records (for tracking past transactions)
+    ownershipHistory: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        shares: {
+          type: Number,
+          required: true,
+          min: [1, "Must have at least 1 share"],
+        },
+        transactionType: {
+          type: String,
+          enum: ["purchase", "sale", "transfer"],
+          required: true,
+        },
+        transactionHash: {
+          type: String,
+          required: true,
+        },
+        timestamp: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
+    timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
@@ -147,8 +200,91 @@ propertySchema.statics.findByOwner = function (ownerId) {
 };
 
 // Static method to get available properties
-propertySchema.statics.getAvailableProperties = function () {
-  return this.find({ isListed: true, availableTokens: { $gt: 0 } });
+propertySchema.statics.getAvailableProperties = async function () {
+  return this.find({ availableShares: { $gt: 0 } });
+};
+
+// Method to check if a user owns any shares of this property
+propertySchema.methods.getUserOwnership = function (userId) {
+  const owner = this.currentOwners.find(
+    (owner) => owner.user.toString() === userId.toString()
+  );
+  return owner ? owner.shares : 0;
+};
+
+// Method to update ownership when shares are purchased
+propertySchema.methods.updateOwnership = async function (
+  userId,
+  shares,
+  transactionHash
+) {
+  // Add to current owners
+  const ownerIndex = this.currentOwners.findIndex(
+    (owner) => owner.user.toString() === userId.toString()
+  );
+
+  if (ownerIndex >= 0) {
+    // Update existing ownership
+    this.currentOwners[ownerIndex].shares += shares;
+    this.currentOwners[ownerIndex].purchaseDate = new Date();
+    this.currentOwners[ownerIndex].transactionHash = transactionHash;
+  } else {
+    // Add new owner
+    this.currentOwners.push({
+      user: userId,
+      shares,
+      transactionHash,
+      purchaseDate: new Date(),
+    });
+  }
+
+  // Add to ownership history
+  this.ownershipHistory.push({
+    user: userId,
+    shares,
+    transactionType: "purchase",
+    transactionHash,
+    timestamp: new Date(),
+  });
+
+  // Update available shares
+  this.availableShares -= shares;
+  if (this.availableShares === 0) {
+    this.isListed = false; // Mark as fully sold
+  }
+
+  return this.save();
+
+  return this.save();
+};
+
+// Virtual for total shares owned (sum of all current owners' shares)
+propertySchema.virtual("totalOwnedShares").get(function () {
+  return this.currentOwners.reduce((total, owner) => total + owner.shares, 0);
+});
+
+// Virtual to get the list of current shareholders
+propertySchema.virtual("shareholders").get(function () {
+  return this.currentOwners.map((owner) => ({
+    userId: owner.user,
+    shares: owner.shares,
+    ownershipPercentage: (owner.shares / this.totalShares) * 100,
+  }));
+});
+
+// Method to check if a user is a shareholder
+propertySchema.methods.isShareholder = function (userId) {
+  return this.currentOwners.some(
+    (owner) => owner.user.toString() === userId.toString()
+  );
+};
+
+// Method to get a user's share count
+propertySchema.methods.getUserShares = function (userId) {
+  const owner = this.currentOwners.find(
+    (owner) => owner.user.toString() === userId.toString()
+  );
+  return owner ? owner.shares : 0;
 };
 
 module.exports = mongoose.model("Property", propertySchema);

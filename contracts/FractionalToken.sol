@@ -9,7 +9,7 @@ contract FractionalToken is ERC20, Ownable {
     address public propertyNFT;
     uint256 public propertyTokenId;
     uint256 public pricePerShare; // in wei
-    bool public isTradable = false;
+    bool public isTradable = true;
     address public propertyOwner;
 
     event SharesPurchased(address buyer, uint256 amount);
@@ -51,17 +51,32 @@ contract FractionalToken is ERC20, Ownable {
         emit TradingDisabled();
     }
 
+    // function _beforeTokenTransfer(
+    //     address from,
+    //     address to,
+    //     uint256 amount
+    // ) internal virtual override {
+    //     // Skip if it's a mint or burn
+    //     if (from != address(0) && to != address(0)) {
+    //         // Allow the owner to transfer tokens even when trading is disabled
+    //         if (from != owner() && to != owner()) {
+    //             require(isTradable, "Trading is not enabled for this token");
+    //         }
+    //     }
+        
+    //     super._beforeTokenTransfer(from, to, amount);
+    // }
+
     function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 amount
+    address from,
+    address to,
+    uint256 amount
     ) internal virtual override {
         // Skip if it's a mint or burn
         if (from != address(0) && to != address(0)) {
-            // Allow the owner to transfer tokens even when trading is disabled
-            if (from != owner() && to != owner()) {
-                require(isTradable, "Trading is not enabled for this token");
-            }
+            // Allow all transfers during testing
+            // TODO: Implement proper access control before deploying to mainnet
+            require(isTradable, "Trading is not enabled for this token");
         }
         
         super._beforeTokenTransfer(from, to, amount);

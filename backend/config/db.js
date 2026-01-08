@@ -4,7 +4,7 @@ const connectDB = async () => {
   try {
     const conn = await mongoose.connect(
       process.env.MONGODB_URI ||
-        "mongodb://localhost:27017/realestate-tokenization",
+        "mongodb://localhost:27017/blockchain-real-estate",
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,

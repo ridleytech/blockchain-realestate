@@ -1,6 +1,45 @@
 require("dotenv").config();
+const { Web3 } = require("web3");
+const path = require("path");
+const fs = require("fs");
+
+// Initialize Web3
+const providerUrl =
+  process.env.BLOCKCHAIN_PROVIDER_URL || "http://localhost:7545";
+const web3 = new Web3(providerUrl);
+
+// Load contract ABIs
+const loadABI = (contractNameOrAddress) => {
+  try {
+    const buildDir = path.join(__dirname, "../../build/contracts");
+    let abiPath;
+
+    // Check if it's an address (starts with 0x and has 42 chars)
+    if (/^0x[a-fA-F0-9]{40}$/.test(contractNameOrAddress)) {
+      // For addresses, look for a file named after the contract address
+      abiPath = path.join(buildDir, `${contractNameOrAddress}.json`);
+    } else {
+      // For contract names, use the standard naming convention
+      abiPath = path.join(buildDir, `${contractNameOrAddress}.json`);
+    }
+
+    const artifact = JSON.parse(fs.readFileSync(abiPath, "utf8"));
+    return artifact.abi;
+  } catch (err) {
+    console.error(`Error loading ABI for ${contractNameOrAddress}:`, err);
+    throw err;
+  }
+};
+
+// Get contract instance
+const getContract = (contractName, address) => {
+  const abi = loadABI(contractName);
+  return new web3.eth.Contract(abi, address);
+};
 
 module.exports = {
+  web3,
+  getContract,
   networks: {
     development: {
       url: process.env.BLOCKCHAIN_PROVIDER_URL || "http://localhost:7545",
@@ -19,6 +58,75 @@ module.exports = {
     transfer: "21000",
   },
   // Contract ABIs will be loaded from build artifacts
+  loadABI,
+
+  // Helper to parse transaction events
+  parseEventLogs: (receipt, eventName) => {
+    if (!receipt.events) return [];
+    const event = receipt.events[eventName];
+    return event ? (Array.isArray(event) ? event : [event]) : [];
+  },
+
+  // Helper to get current gas price with buffer
+  getGasPrice: async (bufferPercent = 10) => {
+    const gasPrice = await web3.eth.getGasPrice();
+    const buffer = (gasPrice * bufferPercent) / 100;
+    return Math.ceil(Number(gasPrice) + buffer).toString();
+  },
+
+  // Helper to estimate gas with buffer
+  estimateGasWithBuffer: async (
+    txObject,
+    from,
+    value = "0",
+    bufferPercent = 10
+  ) => {
+    const gas = await txObject.estimateGas({ from, value });
+    const buffer = (gas * bufferPercent) / 100;
+    return Math.ceil(gas + buffer);
+  },
+
+  // Helper to send transaction with retry logic
+  sendTransaction: async (
+    txObject,
+    from,
+    privateKey,
+    value = "0",
+    gas = null,
+    gasPrice = null
+  ) => {
+    try {
+      if (!gas) {
+        gas = await txObject.estimateGas({ from, value });
+      }
+
+      if (!gasPrice) {
+        gasPrice = await web3.eth.getGasPrice();
+      }
+
+      const txData = {
+        from,
+        to: txObject._parent._address,
+        data: txObject.encodeABI(),
+        gas: Math.ceil(gas * 1.1), // 10% buffer
+        gasPrice: Math.ceil(gasPrice * 1.1), // 10% buffer
+        value,
+      };
+
+      const signedTx = await web3.eth.accounts.signTransaction(
+        txData,
+        privateKey
+      );
+      const receipt = await web3.eth.sendSignedTransaction(
+        signedTx.rawTransaction
+      );
+
+      return receipt;
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      throw error;
+    }
+  },
 };
 
 // Validate required environment variables

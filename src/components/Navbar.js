@@ -1,9 +1,27 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Navbar as BSNavbar, Nav, Container, Button } from "react-bootstrap";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Navbar as BSNavbar,
+  Nav,
+  Container,
+  Button,
+  NavDropdown,
+} from "react-bootstrap";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const location = useLocation();
+  const { currentUser, logout, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Failed to log out", error);
+    }
+  };
 
   return (
     <BSNavbar bg="dark" variant="dark" expand="lg" className="shadow">
@@ -30,12 +48,49 @@ const Navbar = () => {
             <Nav.Link href="#contact">Contact</Nav.Link>
           </Nav>
           <div className="d-flex">
-            <Button variant="outline-light" className="me-2" href="/login">
-              Login
-            </Button>
-            <Button variant="primary" href="/register">
-              Sign Up
-            </Button>
+            {loading ? (
+              <div className="d-flex align-items-center">
+                <div className="spinner-border text-light" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : currentUser ? (
+              <NavDropdown
+                title={
+                  <>
+                    <i className="fas fa-user-circle me-1"></i>
+                    {currentUser.name || "Account"}
+                  </>
+                }
+                id="user-dropdown"
+                align="end"
+              >
+                <NavDropdown.Item as={Link} to="/profile">
+                  <i className="fas fa-user me-2"></i>Profile
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/my-properties">
+                  <i className="fas fa-home me-2"></i>My Properties
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={handleLogout}>
+                  <i className="fas fa-sign-out-alt me-2"></i>Logout
+                </NavDropdown.Item>
+              </NavDropdown>
+            ) : (
+              <>
+                <Button
+                  variant="outline-light"
+                  className="me-2"
+                  as={Link}
+                  to="/login"
+                >
+                  Login
+                </Button>
+                <Button variant="primary" as={Link} to="/register">
+                  Sign Up
+                </Button>
+              </>
+            )}
           </div>
         </BSNavbar.Collapse>
       </Container>
