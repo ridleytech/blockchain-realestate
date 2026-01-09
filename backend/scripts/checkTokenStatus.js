@@ -7,13 +7,79 @@ require("dotenv").config({ path: ".env" });
 
 // Contract ABIs
 const factoryABI = [
-  "function getTokenByPropertyId(uint256) view returns (address)",
-  "function isTradingEnabled(address) view returns (bool)",
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: "propertyNFT", type: "address" },
+      { indexed: true, name: "propertyTokenId", type: "uint256" },
+      { indexed: true, name: "fractionalToken", type: "address" },
+      { indexed: false, name: "name", type: "string" },
+      { indexed: false, name: "symbol", type: "string" },
+      { indexed: false, name: "totalShares", type: "uint256" },
+      { indexed: false, name: "pricePerShare", type: "uint256" },
+    ],
+    name: "FractionalTokenCreated",
+    type: "event",
+  },
 ];
 
 const tokenABI = [
-  "function isTradable() view returns (bool)",
-  "function owner() view returns (address)",
+  {
+    inputs: [],
+    name: "isTradable",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "propertyTokenId",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "pricePerShare",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "propertyNFT",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "propertyOwner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "symbol",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "name",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
 ];
 
 async function checkTokenStatus() {
@@ -27,6 +93,10 @@ async function checkTokenStatus() {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log("Connected to MongoDB");
 
+    if (!process.env.FRACTIONAL_TOKEN_FACTORY_ADDRESS) {
+      throw new Error("FRACTIONAL_TOKEN_FACTORY_ADDRESS is not set in .env");
+    }
+
     // Get the factory contract
     const factory = new web3.eth.Contract(
       factoryABI,
@@ -35,7 +105,37 @@ async function checkTokenStatus() {
 
     // Get all properties from the database
     const properties = await Property.find({});
-    console.log(`Found ${properties.length} properties`);
+    console.log(`\nFound ${properties.length} properties`);
+
+    // Get all FractionalTokenCreated events
+    console.log("Fetching token creation events...");
+    const events = await factory.getPastEvents("FractionalTokenCreated", {
+      fromBlock: 0,
+      toBlock: "latest",
+    });
+
+    console.log(`Found ${events.length} token creation events`);
+
+    // Create a map of propertyTokenId to token info
+    const tokenMap = {};
+    events.forEach((event) => {
+      const {
+        propertyTokenId,
+        fractionalToken,
+        name,
+        symbol,
+        totalShares,
+        pricePerShare,
+      } = event.returnValues;
+
+      tokenMap[propertyTokenId] = {
+        address: fractionalToken,
+        name,
+        symbol,
+        totalShares: web3.utils.fromWei(totalShares, "ether"),
+        pricePerShare: web3.utils.fromWei(pricePerShare, "ether"),
+      };
+    });
 
     for (const property of properties) {
       if (!property.tokenId) {
@@ -48,30 +148,42 @@ async function checkTokenStatus() {
       console.log(`\nProperty: ${property.title} (ID: ${property.tokenId})`);
 
       try {
-        // Get the token address from the factory
-        const tokenAddress = await factory.methods
-          .getTokenByPropertyId(property.tokenId)
-          .call();
+        const tokenInfo = tokenMap[property.tokenId];
 
-        if (
-          !tokenAddress ||
-          tokenAddress === "0x0000000000000000000000000000000000000000"
-        ) {
-          console.log("  ❌ No token address found");
+        if (!tokenInfo) {
+          console.log("  ❌ No token found for this property");
           continue;
         }
 
-        console.log("  Token address:", tokenAddress);
+        console.log(`  Token: ${tokenInfo.name} (${tokenInfo.symbol})`);
+        console.log(`  Address: ${tokenInfo.address}`);
+        console.log(`  Total Shares: ${tokenInfo.totalShares}`);
+        console.log(`  Price Per Share: ${tokenInfo.pricePerShare} ETH`);
 
         // Check token contract
-        const token = new web3.eth.Contract(tokenABI, tokenAddress);
+        const token = new web3.eth.Contract(tokenABI, tokenInfo.address);
 
-        // Check if trading is enabled
-        const isTradable = await token.methods.isTradable().call();
-        const owner = await token.methods.owner().call();
+        // Get token details
+        const [isTradable, owner, tokenPropertyId] = await Promise.all([
+          token.methods.isTradable().call(),
+          token.methods.owner().call(),
+          token.methods.propertyTokenId().call(),
+        ]);
 
         console.log("  Owner:", owner);
         console.log("  Trading enabled:", isTradable);
+
+        // Verify the token's property ID matches (convert both to string for comparison)
+        const tokenPropIdStr = tokenPropertyId.toString();
+        const propTokenIdStr = property.tokenId.toString();
+
+        if (tokenPropIdStr !== propTokenIdStr) {
+          console.warn(
+            `  ⚠️ Token's property ID (${tokenPropertyId}) doesn't match property ID (${property.tokenId})`
+          );
+        } else {
+          console.log(`  ✅ Token's property ID matches (${tokenPropertyId})`);
+        }
       } catch (error) {
         console.error("  ❌ Error checking token:", error.message);
       }
