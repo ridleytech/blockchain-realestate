@@ -303,13 +303,17 @@ router.post(
         // Update property ownership
         await property.updateOwnership(buyerId, shares, transactionHash);
 
+        // Calculate the total amount in ETH (pricePerShare is in wei)
+        const amountInEth = (BigInt(pricePerShare) * BigInt(shares)).toString();
+
         // Create transaction record
         const transaction = new Transaction({
           property: propertyId,
           buyer: buyerId,
           seller: property.lister?._id || null, // Original lister is the seller
           shares,
-          amount: (shares * property.sharePrice).toString(),
+          amount: amountInEth, // Store the actual ETH amount in wei
+          amountUsd: (shares * property.sharePrice).toString(), // Also store USD amount for reference
           transactionHash,
           status: "completed",
         });
@@ -340,12 +344,39 @@ router.post(
           },
         });
       } catch (error) {
-        console.error("Error processing purchase:", {
-          error: error.message,
-          stack: error.stack,
-          propertyId,
-          buyerId,
-          transactionHash,
+        console.error(`[${requestId}] Error processing purchase:`, {
+          timestamp: new Date().toISOString(),
+          error: {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+            code: error.code,
+            keyValue: error.keyValue,
+            errors: error.errors,
+          },
+          request: {
+            propertyId,
+            buyerId,
+            shares,
+            transactionHash,
+            pricePerShare: pricePerShare?.toString(),
+            expectedValue: expectedValue?.toString(),
+            transactionValue: tx?.value?.toString(),
+          },
+          property: {
+            id: property?._id,
+            availableShares: property?.availableShares,
+            fractionalToken: property?.fractionalToken,
+            isListed: property?.isListed,
+          },
+          buyer: {
+            id: buyer?._id,
+            walletAddress: buyer?.walletAddress,
+          },
+          environment: {
+            nodeEnv: process.env.NODE_ENV,
+            network: process.env.ETHEREUM_NETWORK,
+          },
         });
 
         // Save failed transaction with proper error handling
@@ -391,6 +422,19 @@ router.post(
               ? error.message
               : "An error occurred",
           code: error.code || "PURCHASE_ERROR",
+          requestId, // Include request ID for tracking
+          timestamp: new Date().toISOString(),
+          details:
+            process.env.NODE_ENV === "development"
+              ? {
+                  propertyId,
+                  buyerId,
+                  shares,
+                  pricePerShare: pricePerShare?.toString(),
+                  expectedValue: expectedValue?.toString(),
+                  transactionValue: tx?.value?.toString(),
+                }
+              : undefined,
         };
 
         // Add validation error details if available

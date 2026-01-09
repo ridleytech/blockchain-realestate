@@ -9,14 +9,14 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 
 // Configuration
 const CONFIG = {
-  backendEnvPath: path.join(__dirname, "../backend/.env"),
+  backendEnvPath: path.join(__dirname, "../.env"),
   frontendEnvPath: path.join(__dirname, "../.env"),
   mongodbUri:
     process.env.MONGODB_URI ||
     "mongodb://localhost:27017/blockchain-real-estate",
   adminPrivateKey: process.env.ADMIN_PRIVATE_KEY,
   adminAddress: process.env.ADMIN_ADDRESS,
-  contractsBuildDir: path.join(__dirname, "../build/contracts"),
+  contractsBuildDir: path.join(__dirname, "../../build/contracts"), // Updated this line
   srcContractsDir: path.join(__dirname, "../src/contracts"),
   contractsToCopy: [
     "PropertyNFT.json",
@@ -31,15 +31,27 @@ function parseDeploymentOutput(output) {
   const result = {
     propertyNFT: "",
     fractionalTokenFactory: "",
+    fractionalTokens: [], // Store all deployed FractionalToken addresses
   };
 
+  let currentContract = null;
+
   for (const line of lines) {
-    if (line.includes("contract address:")) {
+    if (line.includes("Deploying")) {
+      if (line.includes("PropertyNFT")) currentContract = "PropertyNFT";
+      else if (line.includes("FractionalTokenFactory"))
+        currentContract = "FractionalTokenFactory";
+      else if (line.includes("FractionalToken"))
+        currentContract = "FractionalToken";
+      else currentContract = null;
+    } else if (line.includes("contract address:") && currentContract) {
       const address = line.split("contract address:")[1].trim();
-      if (line.includes("PropertyNFT")) {
+      if (currentContract === "PropertyNFT") {
         result.propertyNFT = address;
-      } else if (line.includes("FractionalTokenFactory")) {
+      } else if (currentContract === "FractionalTokenFactory") {
         result.fractionalTokenFactory = address;
+      } else if (currentContract === "FractionalToken") {
+        result.fractionalTokens.push(address);
       }
     }
   }
@@ -73,32 +85,40 @@ function updateEnvFile(filePath, updates) {
   }
 }
 
-// Reset database and remint NFTs
-async function resetDatabase() {
+// Update database with contract addresses
+async function updateDatabase(contracts) {
   try {
     // Connect to MongoDB
     await mongoose.connect(CONFIG.mongodbUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("Connected to MongoDB");
+    console.log("\nConnected to MongoDB");
 
-    // Import the Property model
     const Property = require("../models/Property");
 
-    // Reset token IDs for all properties
-    await Property.updateMany(
-      {},
-      { $unset: { tokenId: 1, fractionalToken: 1 } }
-    );
-    console.log("✅ Reset token IDs for all properties");
+    // Get all properties
+    const properties = await Property.find({});
 
-    // Close the connection
+    // Update each property with the corresponding token address
+    for (
+      let i = 0;
+      i < Math.min(properties.length, contracts.fractionalTokens.length);
+      i++
+    ) {
+      const property = properties[i];
+      property.fractionalToken = contracts.fractionalTokens[i];
+      await property.save();
+      console.log(
+        `✅ Updated property ${property._id} with token address: ${property.fractionalToken}`
+      );
+    }
+
     await mongoose.connection.close();
     console.log("Disconnected from MongoDB");
   } catch (error) {
-    console.error("❌ Error resetting database:", error.message);
-    process.exit(1);
+    console.error("❌ Error updating database:", error.message);
+    throw error;
   }
 }
 
@@ -157,9 +177,9 @@ async function main() {
     );
     console.log("✅ Contracts deployed successfully\n");
 
-    // Step 2: Parse contract addresses
+    // Step 4: Parse contract addresses
     console.log("🔍 Parsing contract addresses...");
-    const { propertyNFT, fractionalTokenFactory } =
+    const { propertyNFT, fractionalTokenFactory, fractionalTokens } =
       parseDeploymentOutput(deployOutput);
 
     if (!propertyNFT || !fractionalTokenFactory) {
@@ -170,10 +190,11 @@ async function main() {
 
     console.log(`📝 Contract Addresses:`);
     console.log(`- PropertyNFT: ${propertyNFT}`);
-    console.log(`- FractionalTokenFactory: ${fractionalTokenFactory}\n`);
+    console.log(`- FractionalTokenFactory: ${fractionalTokenFactory}`);
+    console.log(`- FractionalTokens:`, fractionalTokens);
 
-    // Step 3: Update environment files
-    console.log("📝 Updating environment files...");
+    // Step 5: Update environment files
+    console.log("\n📝 Updating environment files...");
 
     // Update backend .env
     updateEnvFile(CONFIG.backendEnvPath, {
@@ -193,37 +214,29 @@ async function main() {
       REACT_APP_BLOCKCHAIN_PROVIDER_URL: "http://localhost:7545",
     });
 
-    // Step 4: Reset database and remint NFTs
-    console.log("\n🔄 Resetting database and reminting NFTs...");
-    await resetDatabase();
-
-    // Step 5: Run minting script
-    console.log("\n🔄 Minting NFTs for properties...");
-    execSync("node scripts/mintPropertyNFTs.js", {
-      cwd: path.join(__dirname, "../backend"),
-      stdio: "inherit",
+    // Step 6: Update database with contract addresses
+    console.log("\n🔄 Updating database with token addresses...");
+    await updateDatabase({
+      propertyNFT,
+      fractionalTokenFactory,
+      fractionalTokens,
     });
 
-    // Step 6: Deploy fractional tokens
-    console.log("\n🔄 Deploying fractional tokens...");
-    execSync("node scripts/deployTokensForProperties.js", {
-      cwd: path.join(__dirname, "../backend"),
-      stdio: "inherit",
-    });
-
-    console.log("\n✨ Workspace reset complete! ✨");
-    console.log("✅ Contracts deployed and configured");
-    console.log("✅ Database reset and NFTs reminted");
-    console.log("✅ Environment files updated");
+    console.log("\n✨ Workspace reset completed successfully! ✨");
+    console.log("\nNext steps:");
+    console.log("1. Restart your backend server");
+    console.log("2. Restart your frontend development server");
+    console.log("3. Test the purchase flow with the updated contracts");
   } catch (error) {
-    console.error("❌ Error during workspace reset:", error.message);
+    console.error("\n❌ Error during workspace reset:", error.message);
     process.exit(1);
   }
 }
 
 // Run the script
 if (require.main === module) {
-  main();
+  main().catch((error) => {
+    console.error("❌ Unhandled error:", error);
+    process.exit(1);
+  });
 }
-
-module.exports = { resetWorkspace: main };

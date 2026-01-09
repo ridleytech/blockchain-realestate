@@ -35,8 +35,8 @@ contract FractionalToken is ERC20, Ownable {
         pricePerShare = _pricePerShare;
         propertyOwner = _propertyOwner;
 
-        // Mint all shares to the property owner initially
-        _mint(_propertyOwner, _totalShares * (10 ** decimals()));
+        // Mint all shares to this contract initially
+        _mint(address(this), _totalShares * (10 ** decimals()));
     }
 
     function enableTrading() public onlyOwner {
@@ -89,7 +89,8 @@ contract FractionalToken is ERC20, Ownable {
         uint256 totalPrice = numberOfShares * pricePerShare;
         require(msg.value >= totalPrice, "Insufficient ETH sent");
 
-        _transfer(owner(), msg.sender, numberOfShares * (10 ** decimals()));
+        // Transfer tokens from the contract's balance to the buyer
+        _transfer(address(this), msg.sender, numberOfShares * (10 ** decimals()));
 
         // Refund excess ETH
         if (msg.value > totalPrice) {

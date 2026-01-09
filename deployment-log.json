@@ -1,0 +1,15 @@
+{
+  "network": "development",
+  "deployer": "0x0B97ac9EF3b670b5946FD8F22Af79F8cAf49b21c",
+  "timestamp": "2026-01-09T02:16:04.954Z",
+  "propertyNFT": "0xc23f8331A7457a3eF6a8067967bCf5631Fa8CDe9",
+  "fractionalTokenFactory": "0x3896CdA8F42D7eA30a2FA55BCAfe0615Fc335fdB",
+  "fractionalTokens": {
+    "1": "0xa1Fa5faAc521c5C042D80F0496A2aD85b1F757fA",
+    "2": "0xe30EA32beb9b74C142bAe1354d7e0d0287d46776",
+    "3": "0x72aab51b284b2C19cE1301ef891cbc0c73eC47a7",
+    "4": "0x038FBe4465Fd88BFAbcf646777ea9Cc9584869c7",
+    "5": "0x8F82ca021F087389490f56D5e67Dd256A53D6f3C",
+    "6": "0x9a2F9Fd3850Db2Db3760018dbd06aADecC6944D2"
+  }
+}

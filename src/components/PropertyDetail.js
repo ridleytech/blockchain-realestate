@@ -432,8 +432,18 @@ const PropertyDetail = () => {
                 </div>
                 <div className="d-flex justify-content-between py-2 border-bottom">
                   <span className="text-muted">Price per Share</span>
-                  <span>${property.sharePrice}</span>
+                  <span>
+                    {sharePrice
+                      ? `${parseFloat(sharePrice).toFixed(6)} ETH`
+                      : "Loading..."}
+                  </span>
                 </div>
+                {sharePrice && (
+                  <div className="d-flex justify-content-between py-2 border-bottom">
+                    <span className="text-muted">Price in USD</span>
+                    <span>${(property.sharePrice * 1).toLocaleString()}</span>
+                  </div>
+                )}
               </div>
 
               <div className="mt-4">
@@ -514,8 +524,8 @@ const PropertyDetail = () => {
                   <span>Price per Share:</span>
                   <span className="fw-medium">
                     <FaEthereum className="me-1" />
-                    {property?.sharePrice
-                      ? property.sharePrice.toLocaleString(undefined, {
+                    {sharePrice
+                      ? parseFloat(sharePrice).toLocaleString(undefined, {
                           minimumFractionDigits: 6,
                           maximumFractionDigits: 6,
                         })
@@ -523,12 +533,22 @@ const PropertyDetail = () => {
                     ETH
                   </span>
                 </div>
-                <div className="d-flex justify-content-between fw-bold fs-5">
+                <div className="d-flex justify-content-between mb-2">
+                  <span className="text-muted">Price in USD:</span>
+                  <span className="text-muted">
+                    $
+                    {(property?.sharePrice || 0).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </div>
+                <div className="d-flex justify-content-between fw-bold fs-5 mt-3 pt-2 border-top">
                   <span>Total Cost:</span>
                   <span className="text-primary">
                     <FaEthereum className="me-1" />
-                    {property?.sharePrice
-                      ? (shares * property.sharePrice).toLocaleString(
+                    {sharePrice
+                      ? (shares * parseFloat(sharePrice)).toLocaleString(
                           undefined,
                           {
                             minimumFractionDigits: 6,
@@ -537,6 +557,19 @@ const PropertyDetail = () => {
                         )
                       : "0.000000"}{" "}
                     ETH
+                  </span>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <span className="text-muted">Total in USD:</span>
+                  <span className="text-muted">
+                    $
+                    {(shares * (property?.sharePrice || 0)).toLocaleString(
+                      undefined,
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )}
                   </span>
                 </div>
               </div>
