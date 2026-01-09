@@ -1402,12 +1402,12 @@
         }
       },
       "links": {},
-      "address": "0x6526f8B4c3df581cF6f175680FA9920BE170B875",
-      "transactionHash": "0x79a90a6efa0e25976bfa4e9abbe8e6b18eef16ed9fc4f329f9e02102321dc3b7"
+      "address": "0x3896CdA8F42D7eA30a2FA55BCAfe0615Fc335fdB",
+      "transactionHash": "0x1f0363312b083b16da227d1587e0e1cf2bb7cd786784a684f134f7590c0125a8"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2026-01-09T01:29:20.877Z",
+  "updatedAt": "2026-01-09T02:16:06.476Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

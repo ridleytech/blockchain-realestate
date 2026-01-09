@@ -26,6 +26,12 @@ const propertySchema = new mongoose.Schema(
       required: [true, "Please add a price"],
       min: [0, "Price must be a positive number"],
     },
+    priceCurrency: {
+      type: String,
+      required: true,
+      enum: ["ETH", "USD"],
+      default: "USD",
+    },
     totalShares: {
       type: Number,
       required: [true, "Please specify total number of shares"],

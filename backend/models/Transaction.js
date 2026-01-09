@@ -23,9 +23,19 @@ const transactionSchema = new mongoose.Schema(
       min: [1, "Must purchase at least 1 share"],
     },
     amount: {
+      type: String, // Storing as string to handle large numbers accurately
+      required: true,
+      validate: {
+        validator: function (v) {
+          return /^\d+$/.test(v); // Ensure it's a string of digits
+        },
+        message: (props) => `${props.value} is not a valid amount in wei`,
+      },
+    },
+    amountUsd: {
       type: Number,
       required: true,
-      min: [0, "Amount must be positive"],
+      min: [0, "USD amount must be positive"],
     },
     transactionHash: {
       type: String,

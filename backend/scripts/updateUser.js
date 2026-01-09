@@ -36,7 +36,7 @@ const updateUser = async (email) => {
         $setOnInsert: {
           // These fields will only be set if we're doing an upsert
           name: "ra",
-          walletAddress: "0x5FFDE1B9625F7CD16C517c7D20aB39fecB999DcE",
+          walletAddress: "0xed1ba060692529272b773495bbaee8f7836e3f66", // Updated to MetaMask wallet
         },
       },
       {
