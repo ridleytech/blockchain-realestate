@@ -6,6 +6,25 @@ const Property = require("../models/Property");
 const Transaction = require("../models/Transaction");
 const User = require("../models/User");
 const { web3, getContract } = require("../config/blockchain");
+const mongoose = require("mongoose");
+
+// Middleware to validate MongoDB ObjectId
+const validateObjectId = (req, res, next) => {
+  const { propertyId } = req.params;
+  if (propertyId === "new") {
+    return res.status(200).json({
+      success: true,
+      data: [],
+    });
+  }
+  if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid property ID format",
+    });
+  }
+  next();
+};
 
 // @route   POST api/purchase
 // @desc    Purchase property shares
@@ -471,7 +490,7 @@ router.post(
 // @route   GET api/purchase/property/:propertyId
 // @desc    Get all transactions for a property
 // @access  Public
-router.get("/property/:propertyId", async (req, res) => {
+router.get("/property/:propertyId", validateObjectId, async (req, res) => {
   try {
     const transactions = await Transaction.find({
       property: req.params.propertyId,
@@ -480,10 +499,18 @@ router.get("/property/:propertyId", async (req, res) => {
       .populate("seller", "name email walletAddress")
       .sort("-createdAt");
 
-    res.json(transactions);
+    res.json({
+      success: true,
+      count: transactions.length,
+      data: transactions,
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
   }
 });
 

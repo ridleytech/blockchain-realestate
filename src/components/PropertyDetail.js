@@ -75,12 +75,18 @@ const PropertyDetail = () => {
           throw new Error("Failed to fetch transactions");
 
         const propertyData = await propertyRes.json();
-        const transactions = await transactionsRes.json();
+        const transactionsData = await transactionsRes.json();
+
+        // Handle both array and object with data property response formats
+        const transactions = Array.isArray(transactionsData)
+          ? transactionsData
+          : transactionsData.data || [];
 
         console.log("Property data received:", {
-          propertyData,
+          propertyData: propertyData,
           hasFractionalToken: !!propertyData.fractionalToken,
           fractionalToken: propertyData.fractionalToken,
+          transactionsCount: transactions.length,
         });
 
         // Calculate user's shares if logged in
@@ -250,8 +256,14 @@ const PropertyDetail = () => {
       <h1 className="mb-3">{property.title}</h1>
       <p className="text-muted mb-4">
         <FaMapMarkerAlt className="me-2" />
-        {property.address.street}, {property.address.city},{" "}
-        {property.address.state} {property.address.zipCode}
+        {property?.address?.street ? (
+          <>
+            {property.address.street}, {property.address.city},{" "}
+            {property.address.state} {property.address.zipCode}
+          </>
+        ) : (
+          "Address not available"
+        )}
       </p>
 
       <Row className="mb-5">
@@ -367,21 +379,23 @@ const PropertyDetail = () => {
           <Card className="sticky-top" style={{ top: "20px" }}>
             <Card.Body>
               <h3 className="text-primary mb-4">
-                ${property.price.toLocaleString()}
+                ${property?.price?.toLocaleString?.() || "0"}
               </h3>
 
-              <h2 className="mb-4">${property.price.toLocaleString()}</h2>
+              <h2 className="mb-4">
+                ${property?.price?.toLocaleString?.() || "0"}
+              </h2>
 
-              {property.availableShares > 0 ? (
+              {(property.availableShares || 0) > 0 ? (
                 <>
                   <div className="mb-3">
                     <p className="mb-1">
                       <strong>Available Shares:</strong>{" "}
-                      {property.availableShares.toLocaleString()}
+                      {property.availableShares?.toLocaleString?.() || "0"}
                     </p>
                     <p className="mb-1">
                       <strong>Price per Share:</strong> $
-                      {property.sharePrice.toLocaleString()}
+                      {property.sharePrice?.toLocaleString?.() || "0"}
                     </p>
                     {userShares > 0 && (
                       <p className="text-success mb-0">

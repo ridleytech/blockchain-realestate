@@ -4,6 +4,22 @@ const { check, validationResult } = require("express-validator");
 const auth = require("../middleware/auth");
 const Property = require("../models/Property");
 const User = require("../models/User");
+const mongoose = require("mongoose");
+
+// Middleware to validate MongoDB ObjectId
+const validateObjectId = (req, res, next) => {
+  const { id } = req.params;
+  if (id === "new") {
+    return next(); // Allow 'new' for create operations
+  }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid property ID format",
+    });
+  }
+  next();
+};
 
 // @route   GET api/properties
 // @desc    Get all properties
@@ -13,39 +29,70 @@ router.get("/", async (req, res) => {
     const properties = await Property.find()
       .populate("lister", "name email")
       .select("+fractionalToken");
-    res.json(properties);
+    res.json({
+      success: true,
+      count: properties.length,
+      data: properties,
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
   }
 });
 
 // @route   GET api/properties/:id
 // @desc    Get single property
 // @access  Public
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateObjectId, async (req, res) => {
   try {
+    if (req.params.id === "new") {
+      return res.status(200).json({
+        success: true,
+        isNew: true,
+        data: {
+          title: "",
+          description: "",
+          price: 0,
+          totalShares: 1000,
+          sharePrice: 0,
+          address: {
+            street: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            country: "",
+          },
+          images: [],
+        },
+      });
+    }
+
     const property = await Property.findById(req.params.id)
       .populate("lister", "name email")
       .select("+fractionalToken");
 
     if (!property) {
-      return res.status(404).json({ msg: "Property not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Property not found",
+      });
     }
 
-    // Ensure fractionalToken is included in the response
-    const propertyData = property.toObject();
-    if (!propertyData.fractionalToken) {
-      console.warn(`No fractionalToken found for property ${property._id}`);
-    }
-
-    res.json(propertyData);
+    res.json({
+      success: true,
+      data: property.toObject(),
+    });
   } catch (err) {
     console.error(err.message);
-    if (err.kind === "ObjectId") {
-      return res.status(404).json({ msg: "Property not found" });
-    }
-    res.status(500).send("Server Error");
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
   }
 });
 

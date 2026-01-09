@@ -1,0 +1,138 @@
+OPTIONS /api/purchase/ 204 0.914 ms - 0
+[1767927309420] Purchase request received: {
+  timestamp: '2026-01-09T02:55:09.420Z',
+  body: {
+    propertyId: '695dbbe7f04943cd4f11600c',
+    shares: 2,
+    transactionHash: '0x436b66e38fde0f13e714b5cf125fc9c3899693af8eb19224e78a644b297e54a5'
+  },
+  user: {
+    id: '695de9fe682edb9d6fc1fe5e',
+    email: 'ridleycustomjewelry@gmail.com'
+  },
+  headers: {
+    'content-type': 'application/json',
+    authorization: 'Bearer [REDACTED]',
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36'
+  },
+  url: '/api/purchase/',
+  method: 'POST'
+}
+[1767927309420] Raw request body: {
+  propertyId: '695dbbe7f04943cd4f11600c',
+  shares: 2,
+  transactionHash: '0x436b66e38fde0f13e714b5cf125fc9c3899693af8eb19224e78a644b297e54a5'
+}
+[1767927309420] Validation results: { hasErrors: false, errors: [] }
+[1767927309420] Processing purchase: {
+  propertyId: '695dbbe7f04943cd4f11600c',
+  shares: 2,
+  transactionHash: '0x436b66e3...',
+  buyerId: '695de9fe682edb9d6fc1fe5e'
+}
+[1767927309420] Looking up property: { propertyId: '695dbbe7f04943cd4f11600c' }
+[1767927309420] Property lookup result: {
+  found: true,
+  propertyId: new ObjectId('695dbbe7f04943cd4f11600c'),
+  isListed: true,
+  availableShares: 1000,
+  listerId: new ObjectId('69605f3af76c92ece0e70f94'),
+  listerWallet: '0x00000000...'
+}
+Transaction details: {
+  txTo: '0x8f82ca021f087389490f56d5e67dd256a53d6f3c',
+  propertyToken: '0x8F82ca021F087389490f56D5e67Dd256A53D6f3C',
+  txFrom: '0xed1ba060692529272b773495bbaee8f7836e3f66',
+  buyerWallet: '0xed1ba060692529272b773495bbaee8f7836e3f66',
+  txInput: '0xd1a93d180000000000000000000000000000000000000000000000000000000000000002...',
+  txValue: 265972787458902404n,
+  txGas: 68291n,
+  txGasPrice: 2500000008n
+}
+Expected function signature: 0xd1a93d18
+Actual function signature: 0xd1a93d18
+Contract address: 0x8F82ca021F087389490f56D5e67Dd256A53D6f3C
+Contract methods: [
+  'allowance',
+  'allowance(address,address)',
+  '0xdd62ed3e',
+  'approve',
+  'approve(address,uint256)',
+  '0x095ea7b3',
+  'balanceOf',
+  'balanceOf(address)',
+  '0x70a08231',
+  'decimals',
+  'decimals()',
+  '0x313ce567',
+  'decreaseAllowance',
+  'decreaseAllowance(address,uint256)',
+  '0xa457c2d7',
+  'increaseAllowance',
+  'increaseAllowance(address,uint256)',
+  '0x39509351',
+  'isTradable',
+  'isTradable()',
+  '0x5074449d',
+  'name',
+  'name()',
+  '0x06fdde03',
+  'owner',
+  'owner()',
+  '0x8da5cb5b',
+  'pricePerShare',
+  'pricePerShare()',
+  '0x99530b06',
+  'propertyNFT',
+  'propertyNFT()',
+  '0x37f76838',
+  'propertyOwner',
+  'propertyOwner()',
+  '0xf446c38f',
+  'propertyTokenId',
+  'propertyTokenId()',
+  '0xef9248bd',
+  'renounceOwnership',
+  'renounceOwnership()',
+  '0x715018a6',
+  'symbol',
+  'symbol()',
+  '0x95d89b41',
+  'totalSupply',
+  'totalSupply()',
+  '0x18160ddd',
+  'transfer',
+  'transfer(address,uint256)',
+  '0xa9059cbb',
+  'transferFrom',
+  'transferFrom(address,address,uint256)',
+  '0x23b872dd',
+  'transferOwnership',
+  'transferOwnership(address)',
+  '0xf2fde38b',
+  'enableTrading',
+  'enableTrading()',
+  '0x8a8c523c',
+  'disableTrading',
+  'disableTrading()',
+  '0x17700f01',
+  'buyShares',
+  'buyShares(uint256)',
+  '0xd1a93d18',
+  'withdraw',
+  'withdraw()',
+  '0x3ccfd60b'
+]
+Contract state: {
+  name: 'Spacious Family Home in Porter Share',
+  symbol: 'HOUS',
+  totalSupply: '1000000000000000000000',
+  isTradable: true,
+  pricePerShare: '132986393729451202'
+}
+Purchase details: {
+  shares: 2,
+  pricePerShare: '132986393729451202',
+  expectedValue: '265972787458902404',
+  transactionValue: '265972787458902404'
+}

@@ -34,6 +34,7 @@
     "migrate": "truffle migrate --network development",
     "migrate:ropsten": "truffle migrate --network development",
     "migrate:goerli": "truffle migrate --network goerli",
+    "migrate:sepolia": "truffle migrate --network Sepolia",
     "test:truffle": "truffle test",
     "console": "truffle console --network development",
     "clean": "rm -rf build/"
