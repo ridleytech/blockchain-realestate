@@ -12,6 +12,7 @@ const PropertyNFT = require(path.join(
   "build/contracts/PropertyNFT.json"
 ));
 const Property = require("../models/Property");
+const User = require("../models/User");
 
 // Initialize ethers provider
 const provider = new ethers.providers.JsonRpcProvider(
