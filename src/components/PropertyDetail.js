@@ -81,19 +81,52 @@ const PropertyDetail = () => {
         // Set the property data
         setProperty(propertyData);
 
-        // If there's a fractional token, fetch its price
+        // If there's a fractional token, fetch its price and remaining shares
         if (propertyData.fractionalToken) {
           try {
             const contract = getFractionalTokenContract(
               propertyData.fractionalToken
             );
-            const price = await contract.methods.pricePerShare().call();
+
+            // Fetch price, balance, and decimals in parallel
+            const [price, contractBalance, decimals] = await Promise.all([
+              contract.methods.pricePerShare().call(),
+              contract.methods.balanceOf(contract._address).call(),
+              contract.methods
+                .decimals()
+                .call()
+                .catch(() => "18"), // Default to 18 if not available
+            ]);
+
             if (isMounted) {
+              // Calculate the divisor based on token decimals
+              const divisor = web3.utils
+                .toBN(10)
+                .pow(web3.utils.toBN(decimals));
+              const remainingShares = web3.utils
+                .toBN(contractBalance)
+                .div(divisor)
+                .toString();
+
+              // Get total supply with the same decimal handling
+              const totalSupply = await contract.methods.totalSupply().call();
+              const totalShares = web3.utils
+                .toBN(totalSupply)
+                .div(divisor)
+                .toString();
+
               setSharePrice(web3.utils.fromWei(price, "ether"));
+
+              // Update the property with the actual remaining shares and total shares
+              setProperty((prev) => ({
+                ...prev,
+                availableShares: parseInt(remainingShares, 10),
+                totalShares: parseInt(totalShares, 10),
+              }));
             }
           } catch (err) {
-            console.error("Error fetching share price:", err);
-            // Don't fail the whole fetch if price fetch fails
+            console.error("Error fetching token data:", err);
+            // Don't fail the whole fetch if token data fetch fails
           }
         }
 
