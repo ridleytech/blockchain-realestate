@@ -1,0 +1,17 @@
+(base) rr@Randalls-MacBook-Air backend % cd /Users/rr/Documents/Code/React\ Projects/blockchain-realestate/backend
+node scripts/checkTokenState.js
+=== Token Information ===
+Name: Modern Home in Humble Share
+Symbol: HOUS
+Decimals: 18
+Total Supply: 1000.0 HOUS
+Is Tradable: true
+Owner: 0xb2fb91BB78aCaD92ceDdc520e684B3a1f30E2752
+
+=== Balances ===
+Owner (0x0B97ac9EF3b670b5946FD8F22Af79F8cAf49b21c): 1000.0 HOUS
+Buyer (0xED1bA060692529272B773495bBAee8f7836e3f66): 0.0 HOUS
+
+=== Allowance ===
+Allowance (Owner -> Buyer): 0.0 HOUS
+(base) rr@Randalls-MacBook-Air backend % 
