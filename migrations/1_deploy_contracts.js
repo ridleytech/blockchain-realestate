@@ -1,6 +1,7 @@
 const PropertyNFT = artifacts.require("PropertyNFT");
 const FractionalToken = artifacts.require("FractionalToken");
 const FractionalTokenFactory = artifacts.require("FractionalTokenFactory");
+const axios = require("axios");
 
 // Hardcoded properties from listings
 const PROPERTIES = [
@@ -96,9 +97,39 @@ const PROPERTIES = [
   },
 ];
 
+// Helper function to get current ETH price in USD
+const getEthPriceInUsd = async () => {
+  try {
+    const response = await axios.get(
+      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+    );
+    return response.data.ethereum.usd;
+  } catch (error) {
+    console.error(
+      "Error fetching ETH price, using fallback price of $3000:",
+      error.message
+    );
+    return 3000; // Fallback price if API call fails
+  }
+};
+
 module.exports = async function (deployer, network, accounts) {
   const [deployerAccount] = accounts;
   console.log("Deploying contracts with account:", deployerAccount);
+
+  // Get current ETH price in USD
+  const ethPriceInUsd = await getEthPriceInUsd();
+  console.log(`\nCurrent ETH price: $${ethPriceInUsd}\n`);
+
+  // Initialize deployment log
+  const deploymentLog = {
+    network: network,
+    deployer: deployerAccount,
+    timestamp: new Date().toISOString(),
+    propertyNFT: "",
+    fractionalTokenFactory: "",
+    fractionalTokens: {},
+  };
 
   try {
     console.log("Using hardcoded properties for deployment");
@@ -113,12 +144,14 @@ module.exports = async function (deployer, network, accounts) {
     console.log("Deploying PropertyNFT...");
     await deployer.deploy(PropertyNFT);
     const propertyNFT = await PropertyNFT.deployed();
+    deploymentLog.propertyNFT = propertyNFT.address;
     console.log("✅ PropertyNFT deployed at:", propertyNFT.address);
 
     // Deploy FractionalTokenFactory contract
     console.log("\nDeploying FractionalTokenFactory...");
     await deployer.deploy(FractionalTokenFactory);
     const factory = await FractionalTokenFactory.deployed();
+    deploymentLog.fractionalTokenFactory = factory.address;
     console.log("✅ FractionalTokenFactory deployed at:", factory.address);
 
     console.log("\nProcessing properties...");
@@ -148,9 +181,25 @@ module.exports = async function (deployer, network, accounts) {
 
       // Deploy FractionalToken for the property
       console.log("  Deploying FractionalToken...");
+
+      // Convert property price from USD to ETH and calculate price per share
+      const priceInEth = property.price / ethPriceInUsd;
+      const pricePerShareInEth = priceInEth / property.totalShares;
       const pricePerShareInWei = web3.utils.toWei(
-        property.sharePrice.toString(),
+        pricePerShareInEth.toFixed(18),
         "ether"
+      );
+
+      console.log(
+        `  Property Value: $${property.price} USD (${priceInEth.toFixed(
+          6
+        )} ETH)`
+      );
+      console.log(`  Total Shares: ${property.totalShares}`);
+      console.log(
+        `  Calculated Price Per Share: ${pricePerShareInEth.toFixed(
+          6
+        )} ETH (${pricePerShareInWei} wei)`
       );
 
       const createResult = await factory.createFractionalToken(
@@ -161,7 +210,7 @@ module.exports = async function (deployer, network, accounts) {
           ? property.propertyType.substring(0, 4).toUpperCase()
           : "PROP", // symbol
         property.totalShares, // totalShares
-        pricePerShareInWei // pricePerShare
+        pricePerShareInWei // pricePerShare in wei
       );
 
       // Get token address from transaction logs
@@ -183,6 +232,9 @@ module.exports = async function (deployer, network, accounts) {
 
       console.log(`  ✅ Deployed FractionalToken at: ${tokenAddress}`);
 
+      // Add token address to deployment log
+      deploymentLog.fractionalTokens[tokenId] = tokenAddress;
+
       console.log(`✅ Successfully processed property: ${property.title}`);
       console.log(`   - NFT ID: ${tokenId}`);
       console.log(`   - Token Address: ${tokenAddress}`);
@@ -190,8 +242,29 @@ module.exports = async function (deployer, network, accounts) {
     }
 
     console.log("\n✅ All properties processed successfully!");
+
+    // Save deployment log to file
+    const fs = require("fs");
+    const path = require("path");
+    const logPath = path.join(__dirname, "../deployment-log.json");
+    fs.writeFileSync(logPath, JSON.stringify(deploymentLog, null, 2));
+    console.log(`\n✅ Deployment log saved to: ${logPath}`);
   } catch (error) {
     console.error("❌ Error during deployment:", error);
+
+    // Save partial deployment log if possible
+    if (deploymentLog) {
+      try {
+        const fs = require("fs");
+        const path = require("path");
+        const logPath = path.join(__dirname, "../deployment-log-error.json");
+        fs.writeFileSync(logPath, JSON.stringify(deploymentLog, null, 2));
+        console.error(`\n⚠️  Partial deployment log saved to: ${logPath}`);
+      } catch (logError) {
+        console.error("Failed to save error log:", logError);
+      }
+    }
+
     throw error;
   }
 };
