@@ -47,6 +47,61 @@ const PropertyForm = () => {
   const [success, setSuccess] = useState("");
   const [previewImages, setPreviewImages] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Required fields
+    if (!formData.title?.trim()) newErrors.title = "Property title is required";
+    if (!formData.description?.trim())
+      newErrors.description = "Description is required";
+    if (!formData.price) newErrors.price = "Price is required";
+    if (formData.price && (isNaN(formData.price) || formData.price <= 0))
+      newErrors.price = "Price must be greater than 0";
+    if (!formData.totalShares)
+      newErrors.totalShares = "Total shares is required";
+    if (
+      formData.totalShares &&
+      (isNaN(formData.totalShares) || formData.totalShares < 1)
+    )
+      newErrors.totalShares = "Must have at least 1 share";
+    if (!formData.address.street?.trim())
+      newErrors["address.street"] = "Street address is required";
+    if (!formData.address.city?.trim())
+      newErrors["address.city"] = "City is required";
+    if (!formData.address.state?.trim())
+      newErrors["address.state"] = "State is required";
+    if (!formData.address.zipCode?.trim())
+      newErrors["address.zipCode"] = "ZIP code is required";
+    if (
+      formData.bedrooms &&
+      (isNaN(formData.bedrooms) || formData.bedrooms < 0)
+    )
+      newErrors.bedrooms = "Must be 0 or more";
+    if (
+      formData.bathrooms &&
+      (isNaN(formData.bathrooms) || formData.bathrooms < 0)
+    )
+      newErrors.bathrooms = "Must be 0 or more";
+    if (
+      formData.squareFeet &&
+      (isNaN(formData.squareFeet) || formData.squareFeet <= 0)
+    )
+      newErrors.squareFeet = "Must be greater than 0";
+    if (
+      formData.yearBuilt &&
+      (isNaN(formData.yearBuilt) ||
+        formData.yearBuilt < 1800 ||
+        formData.yearBuilt > new Date().getFullYear() + 1)
+    )
+      newErrors.yearBuilt = `Please enter a valid year between 1800 and ${
+        new Date().getFullYear() + 1
+      }`;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   // Calculate price per share whenever price or totalShares changes
   useEffect(() => {
@@ -156,6 +211,11 @@ const PropertyForm = () => {
     setError("");
     setSuccess("");
 
+    // Validate form before submission
+    if (!validateForm()) {
+      return; // Stop if validation fails
+    }
+
     try {
       const method = isNew ? "post" : "put";
       const url = isNew
@@ -171,6 +231,7 @@ const PropertyForm = () => {
           sharePrice: parseFloat(formData.sharePrice) || 0,
           totalShares: parseInt(formData.totalShares, 10) || 1000,
           lister: currentUser.id,
+          ...(isNew && { isListed: false }), // Only set isListed for new properties
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -180,7 +241,7 @@ const PropertyForm = () => {
 
       setSuccess(
         isNew
-          ? "Property listed successfully! Redirecting to property page..."
+          ? "Property submitted for approval! It will be visible in your listings once approved. Redirecting..."
           : "Property updated successfully!"
       );
 
@@ -214,7 +275,10 @@ const PropertyForm = () => {
       <Row className="justify-content-center">
         <Col lg={8}>
           <Card className="mb-4">
-            <Card.Header as="h4">
+            <Card.Header
+              as="h4"
+              style={{ backgroundColor: "#0d6efd", color: "white" }}
+            >
               {isNew ? "Add New Property" : "Edit Property"}
             </Card.Header>
             <Card.Body>
@@ -232,9 +296,12 @@ const PropertyForm = () => {
                         name="title"
                         value={formData.title}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!errors.title}
                         placeholder="E.g., Beautiful Downtown Apartment"
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.title}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                   <Col md={4}>
@@ -245,10 +312,13 @@ const PropertyForm = () => {
                         name="price"
                         value={formData.price}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!errors.price}
                         min="0"
                         step="0.01"
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.price}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -317,8 +387,12 @@ const PropertyForm = () => {
                         name="address.street"
                         value={formData.address.street}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!errors["address.street"]}
+                        placeholder="123 Main St"
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors["address.street"]}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -371,9 +445,12 @@ const PropertyForm = () => {
                         name="totalShares"
                         value={formData.totalShares}
                         onChange={handleChange}
+                        isInvalid={!!errors.totalShares}
                         min="1"
-                        required
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.totalShares}
+                      </Form.Control.Feedback>
                       <Form.Text className="text-muted">
                         Total number of shares to divide the property into
                       </Form.Text>

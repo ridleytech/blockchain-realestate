@@ -96,6 +96,15 @@ router.get("/:id", validateObjectId, async (req, res) => {
   }
 });
 
+// Helper function to validate share price calculation
+const validateSharePrice = (price, totalShares, sharePrice) => {
+  const calculatedSharePrice = parseFloat(price) / parseInt(totalShares);
+  const roundedCalculated = Math.round(calculatedSharePrice * 100) / 100; // Round to 2 decimal places
+  const providedPrice = parseFloat(sharePrice);
+
+  return Math.abs(providedPrice - roundedCalculated) < 0.01; // Allow for minor floating point differences
+};
+
 // @route   POST api/properties
 // @desc    Create a property listing
 // @access  Private
@@ -106,13 +115,15 @@ router.post(
     [
       check("title", "Title is required").not().isEmpty(),
       check("description", "Description is required").not().isEmpty(),
-      check("price", "Price is required and must be a positive number").isFloat(
-        { min: 0 }
-      ),
-      check("totalShares", "Total shares must be at least 1").isInt({ min: 1 }),
-      check("sharePrice", "Share price must be greater than 0").isFloat({
-        min: 0.0001,
-      }),
+      check("price", "Price is required and must be a positive number")
+        .isFloat({ min: 0.01 })
+        .withMessage("Price must be at least $0.01"),
+      check("totalShares", "Total shares must be at least 1")
+        .isInt({ min: 1 })
+        .withMessage("Must have at least 1 share"),
+      check("sharePrice", "Share price must be greater than 0")
+        .isFloat({ min: 0.0001 })
+        .withMessage("Share price must be at least $0.0001"),
       check("address.street", "Street address is required").not().isEmpty(),
       check("address.city", "City is required").not().isEmpty(),
       check("address.state", "State is required").not().isEmpty(),
@@ -123,10 +134,24 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
     }
 
     try {
+      const { price, totalShares, sharePrice } = req.body;
+
+      // Validate share price calculation
+      if (!validateSharePrice(price, totalShares, sharePrice)) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Invalid price per share calculation. The share price must equal the total price divided by the number of shares.",
+        });
+      }
       // Create new property with lister set to current user
       const propertyData = {
         ...req.body,
@@ -156,38 +181,101 @@ router.post(
 // @route   PUT api/properties/:id
 // @desc    Update a property
 // @access  Private
-router.put("/:id", [auth.protect], async (req, res) => {
-  try {
-    let property = await Property.findById(req.params.id);
-
-    if (!property) {
-      return res.status(404).json({ msg: "Property not found" });
+router.put(
+  "/:id",
+  [
+    auth.protect,
+    [
+      check("price", "Price must be a positive number")
+        .optional()
+        .isFloat({ min: 0.01 })
+        .withMessage("Price must be at least $0.01"),
+      check("totalShares")
+        .optional()
+        .custom((value, { req }) => {
+          if (req.method === "PUT") {
+            throw new Error("Cannot update totalShares after creation");
+          }
+          return true;
+        }),
+      check("sharePrice")
+        .optional()
+        .custom((value, { req }) => {
+          if (req.method === "PUT") {
+            throw new Error(
+              "Cannot directly update sharePrice. It is calculated from price and totalShares."
+            );
+          }
+          return true;
+        }),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
     }
 
-    // Check if user is the lister
-    if (property.lister.toString() !== req.user.id) {
-      return res.status(401).json({ msg: "User not authorized" });
+    try {
+      let property = await Property.findById(req.params.id);
+
+      if (!property) {
+        return res.status(404).json({
+          success: false,
+          message: "Property not found",
+        });
+      }
+
+      // Check if user is the lister
+      if (property.lister.toString() !== req.user.id) {
+        return res.status(401).json({
+          success: false,
+          message: "User not authorized",
+        });
+      }
+
+      // Prevent changing certain fields after creation
+      const { totalShares, sharePrice, lister, ...updateData } = req.body;
+
+      // If price is being updated, validate the new price against existing totalShares
+      if (updateData.price !== undefined) {
+        const newPrice = parseFloat(updateData.price);
+        if (isNaN(newPrice) || newPrice <= 0) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid price. Must be a positive number.",
+          });
+        }
+
+        // Recalculate share price based on existing totalShares
+        const newSharePrice = newPrice / property.totalShares;
+        updateData.sharePrice = parseFloat(newSharePrice.toFixed(6)); // Store with higher precision
+      }
+
+      // Only update allowed fields
+      property = await Property.findByIdAndUpdate(
+        req.params.id,
+        { $set: updateData },
+        { new: true, runValidators: true }
+      );
+
+      res.json({
+        success: true,
+        data: property,
+      });
+    } catch (err) {
+      console.error(err.message);
+      if (err.kind === "ObjectId") {
+        return res.status(404).json({ msg: "Property not found" });
+      }
+      res.status(500).send("Server Error");
     }
-
-    // Prevent changing certain fields after creation
-    const { totalShares, sharePrice, lister, ...updateData } = req.body;
-
-    // Only update allowed fields
-    property = await Property.findByIdAndUpdate(
-      req.params.id,
-      { $set: updateData },
-      { new: true }
-    );
-
-    res.json(property);
-  } catch (err) {
-    console.error(err.message);
-    if (err.kind === "ObjectId") {
-      return res.status(404).json({ msg: "Property not found" });
-    }
-    res.status(500).send("Server Error");
   }
-});
+);
 
 // @route   GET api/properties/me/listed
 // @desc    Get properties listed by current user

@@ -48,71 +48,98 @@ const PropertyDetail = () => {
   const [sharePrice, setSharePrice] = useState(0);
 
   useEffect(() => {
-    const fetchProperty = async () => {
-      try {
-        console.log("Fetching property data...");
+    let isMounted = true;
 
-        // If we have a fractional token, fetch the current price
-        if (property?.fractionalToken) {
+    const fetchProperty = async () => {
+      if (!id) return;
+
+      try {
+        console.log("Fetching property data for ID:", id);
+        setLoading(true);
+        setError(null);
+
+        // First fetch the property data
+        const propertyRes = await fetch(
+          `http://localhost:4000/api/properties/${id}`
+        );
+        if (!propertyRes.ok) {
+          throw new Error(
+            `Failed to fetch property: ${propertyRes.statusText}`
+          );
+        }
+
+        const response = await propertyRes.json();
+        console.log("API Response:", response);
+
+        if (!isMounted) return;
+
+        // Extract the property data from the response
+        const propertyData = response.data || response; // Handle both {data: {...}} and direct property object
+
+        console.log("Property data:", propertyData);
+
+        // Set the property data
+        setProperty(propertyData);
+
+        // If there's a fractional token, fetch its price
+        if (propertyData.fractionalToken) {
           try {
             const contract = getFractionalTokenContract(
-              property.fractionalToken
+              propertyData.fractionalToken
             );
             const price = await contract.methods.pricePerShare().call();
-            setSharePrice(web3.utils.fromWei(price, "ether"));
+            if (isMounted) {
+              setSharePrice(web3.utils.fromWei(price, "ether"));
+            }
           } catch (err) {
             console.error("Error fetching share price:", err);
-            // Don't fail the whole property fetch if price fetch fails
+            // Don't fail the whole fetch if price fetch fails
           }
         }
-        const [propertyRes, transactionsRes] = await Promise.all([
-          fetch(`http://localhost:4000/api/properties/${id}`),
-          fetch(`http://localhost:4000/api/purchase/property/${id}`),
-        ]);
 
-        if (!propertyRes.ok) throw new Error("Failed to fetch property");
-        if (!transactionsRes.ok)
-          throw new Error("Failed to fetch transactions");
-
-        const propertyData = await propertyRes.json();
-        const transactionsData = await transactionsRes.json();
-
-        // Handle both array and object with data property response formats
-        const transactions = Array.isArray(transactionsData)
-          ? transactionsData
-          : transactionsData.data || [];
-
-        console.log("Property data received:", {
-          propertyData: propertyData,
-          hasFractionalToken: !!propertyData.fractionalToken,
-          fractionalToken: propertyData.fractionalToken,
-          transactionsCount: transactions.length,
-        });
-
-        // Calculate user's shares if logged in
-        if (currentUser) {
-          const userTransaction = transactions.find(
-            (tx) =>
-              tx.buyer?._id === currentUser.id && tx.status === "completed"
+        // Then fetch transactions
+        try {
+          const transactionsRes = await fetch(
+            `http://localhost:4000/api/purchase/property/${id}`
           );
+          if (transactionsRes.ok) {
+            const transactionsData = await transactionsRes.json();
+            const transactions = Array.isArray(transactionsData)
+              ? transactionsData
+              : transactionsData.data || [];
 
-          if (userTransaction) {
-            setUserShares(userTransaction.shares);
+            // Update user shares if logged in
+            if (isMounted && currentUser) {
+              const userTransaction = transactions.find(
+                (tx) =>
+                  tx.buyer?._id === currentUser.id && tx.status === "completed"
+              );
+              if (userTransaction) {
+                setUserShares(userTransaction.shares);
+              }
+            }
           }
+        } catch (err) {
+          console.error("Error fetching transactions:", err);
+          // Continue even if transactions fail to load
         }
-
-        setProperty({
-          ...propertyData,
-          // Add any additional property processing here
-        });
       } catch (err) {
-        setError(err.message);
+        console.error("Error in fetchProperty:", err);
+        if (isMounted) {
+          setError(err.message || "Failed to load property");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchProperty();
+
+    return () => {
+      isMounted = false; // Cleanup function to prevent state updates after unmount
+    };
   }, [id, currentUser]);
 
   const handlePurchase = async () => {
