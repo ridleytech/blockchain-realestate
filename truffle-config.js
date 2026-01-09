@@ -21,6 +21,19 @@ module.exports = {
       gas: 6721975,
       gasPrice: 20000000000, // 20 Gwei
     },
+    sepolia: {
+      provider: () =>
+        new HDWalletProvider(
+          MNEMONIC,
+          `https://sepolia.infura.io/v3/${INFURA_PROJECT_ID}`
+        ),
+      network_id: 5, // Goerli's id
+      confirmations: 2, // # of confirmations to wait between deployments
+      timeoutBlocks: 200, // # of blocks before a deployment times out
+      skipDryRun: true, // Skip dry run before migrations
+      networkCheckTimeout: 1000000,
+      timeoutBlocks: 200,
+    },
     goerli: {
       provider: () =>
         new HDWalletProvider(

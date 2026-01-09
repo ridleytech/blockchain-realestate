@@ -44,13 +44,14 @@ Summary
 
 
 
-truffle migrate -f 2 --to 2 --network development
-
-
 (base) rr@Randalls-MacBook-Air blockchain-realestate % npm run migrate
 
 > blockchain-realestate@0.1.0 migrate
-> truffle migrate --reset --network development
+
+
+> truffle migrate --network development
+> node scripts/update_contracts.js
+
 
 [dotenv@17.2.3] injecting env (10) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
 

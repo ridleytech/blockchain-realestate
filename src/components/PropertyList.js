@@ -44,8 +44,9 @@ const PropertyList = () => {
           throw new Error("Failed to fetch properties");
         }
 
-        const data = await response.json();
-        setProperties(data);
+        const result = await response.json();
+        // Handle both array and object with data property response formats
+        setProperties(Array.isArray(result) ? result : result.data || []);
       } catch (err) {
         console.error("Error fetching properties:", err);
         setError(err.message);
