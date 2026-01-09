@@ -12,11 +12,16 @@ import {
 import { getFirstImage } from "../utils/imageUtils";
 import { useAuth } from "../context/AuthContext";
 import { FaHome, FaDollarSign, FaChartPie, FaPlus } from "react-icons/fa";
+import { getFractionalTokenContract } from "../utils/blockchain";
+import Web3 from "web3";
+
+const web3 = new Web3(window.ethereum);
 
 const PropertyList = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loadingShares, setLoadingShares] = useState(false);
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState("all"); // 'all', 'listed', 'owned'
 
@@ -58,7 +63,69 @@ const PropertyList = () => {
     fetchProperties();
   }, [activeTab, currentUser]);
 
-  if (loading) {
+  // Fetch remaining shares from the blockchain with proper decimal handling
+  const fetchRemainingShares = async (property) => {
+    if (!property.fractionalToken) return property;
+
+    try {
+      setLoadingShares(true);
+      const contract = getFractionalTokenContract(property.fractionalToken);
+
+      // Get contract balance and decimals in parallel
+      const [contractBalance, decimals] = await Promise.all([
+        contract.methods.balanceOf(contract._address).call(),
+        contract.methods
+          .decimals()
+          .call()
+          .catch(() => "18"), // Default to 18 if not available
+      ]);
+
+      // Calculate the divisor based on token decimals
+      const divisor = web3.utils.toBN(10).pow(web3.utils.toBN(decimals));
+      const remainingShares = web3.utils
+        .toBN(contractBalance)
+        .div(divisor)
+        .toString();
+
+      // Calculate total supply with the same decimal handling
+      const totalSupply = await contract.methods.totalSupply().call();
+      const totalShares = web3.utils.toBN(totalSupply).div(divisor).toString();
+
+      return {
+        ...property,
+        availableShares: parseInt(remainingShares, 10),
+        totalShares: parseInt(totalShares, 10),
+      };
+    } catch (err) {
+      console.error(`Error fetching shares for property ${property._id}:`, err);
+      return property; // Return property as is if there's an error
+    } finally {
+      setLoadingShares(false);
+    }
+  };
+
+  // Update properties with remaining shares
+  useEffect(() => {
+    if (properties.length > 0) {
+      const updatePropertiesWithShares = async () => {
+        try {
+          setLoadingShares(true);
+          const updatedProperties = await Promise.all(
+            properties.map(fetchRemainingShares)
+          );
+          setProperties(updatedProperties);
+        } catch (err) {
+          console.error("Error updating properties with shares:", err);
+        } finally {
+          setLoadingShares(false);
+        }
+      };
+
+      updatePropertiesWithShares();
+    }
+  }, [JSON.stringify(properties.map((p) => p._id))]); // Only run when property IDs change
+
+  if (loading || loadingShares) {
     return (
       <div className="d-flex justify-content-center my-5">
         <Spinner animation="border" role="status">

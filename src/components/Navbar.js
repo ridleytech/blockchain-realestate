@@ -43,9 +43,27 @@ const Navbar = () => {
             >
               Properties
             </Nav.Link>
-            <Nav.Link href="#how-it-works">How It Works</Nav.Link>
-            <Nav.Link href="#about">About</Nav.Link>
-            <Nav.Link href="#contact">Contact</Nav.Link>
+            <Nav.Link
+              as={Link}
+              to="/how-it-works"
+              active={location.pathname === "/how-it-works"}
+            >
+              How It Works
+            </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to="/about"
+              active={location.pathname === "/about"}
+            >
+              About
+            </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to="/contact"
+              active={location.pathname === "/contact"}
+            >
+              Contact
+            </Nav.Link>
           </Nav>
           <div className="d-flex">
             {loading ? (

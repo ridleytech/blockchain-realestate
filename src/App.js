@@ -11,10 +11,14 @@ import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import PropertyList from "./components/PropertyList";
 import PropertyDetail from "./components/PropertyDetail";
+import PropertyForm from "./components/PropertyForm";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import PrivateRoute from "./components/PrivateRoute";
+import HowItWorks from "./components/HowItWorks";
+import Contact from "./components/Contact";
+import About from "./components/About";
 
 function App() {
   return (
@@ -27,9 +31,28 @@ function App() {
               <Routes>
                 <Route path="/" element={<PropertyList />} />
                 <Route path="/properties" element={<PropertyList />} />
+                <Route
+                  path="/properties/new"
+                  element={
+                    <PrivateRoute>
+                      <PropertyForm />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/properties/edit/:id"
+                  element={
+                    <PrivateRoute>
+                      <PropertyForm />
+                    </PrivateRoute>
+                  }
+                />
                 <Route path="/properties/:id" element={<PropertyDetail />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/about" element={<About />} />
                 <Route path="*" element={<PropertyList />} />
               </Routes>
             </Container>
