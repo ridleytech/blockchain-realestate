@@ -69,5 +69,6 @@
     "fs-extra": "^11.3.3",
     "mongoose": "^9.1.2",
     "truffle": "^5.8.5"
-  }
+  },
+  "license": "MIT"
 }
