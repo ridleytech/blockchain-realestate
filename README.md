@@ -48,6 +48,13 @@ A decentralized real estate investment platform that enables fractional ownershi
 - Dark/Light mode support for better user experience
 - Accessibility features for better usability
 
+### 🤖 AI & AWS Bedrock
+
+- AI Property Insights & Q&A powered by Amazon Bedrock (Claude 3.5)
+- Grounded answers with optional Bedrock Knowledge Bases (RAG)
+- Citations/Sources displayed for grounded responses
+- Server-side rate limiting and optional Bedrock Guardrails for safer output
+
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -68,6 +75,8 @@ A decentralized real estate investment platform that enables fractional ownershi
 - Winston for comprehensive logging
 - Rate limiting and security middleware
 - API documentation with Swagger/OpenAPI
+- AWS SDK v3 Bedrock Runtime (text generation)
+- AWS SDK v3 Bedrock Agent Runtime (Knowledge Bases / RAG)
 
 ### Blockchain
 
@@ -90,6 +99,46 @@ A decentralized real estate investment platform that enables fractional ownershi
 - Ganache (for local development)
 - MetaMask browser extension
 
+## 🤖 AI & AWS Bedrock Setup
+
+- Enable Amazon Bedrock in your AWS account and the target model (e.g., Claude 3.5 Sonnet).
+- Provide AWS credentials with permissions to invoke Bedrock Runtime and Agent Runtime.
+- Backend environment variables:
+  - `AWS_REGION` (e.g., `us-east-1`)
+  - `BEDROCK_MODEL_ID` (optional, defaults to Claude 3.5 Sonnet)
+  - `BEDROCK_GUARDRAIL_ID` and `BEDROCK_GUARDRAIL_VERSION` (optional, enable Guardrails)
+  - `KNOWLEDGE_BASE_ID` (optional, enables RAG via Bedrock Knowledge Bases)
+
+### API
+
+- `POST /api/ai/ask`
+  - Body: `{ "propertyId": string, "question": string }`
+  - Response: `{ success: boolean, answer: string, citations?: Array<{ source: string }> }`
+  - Notes: Rate-limited; JWT auth required.
+
+## 📄 RAG with Bedrock Knowledge Bases
+
+When `KNOWLEDGE_BASE_ID` is set, the backend retrieves top relevant snippets from a Bedrock Knowledge Base and grounds answers with citations.
+
+### Document Organization (S3)
+
+- Bucket example: `s3://realestate-rag-docs/`
+- Per-property structure:
+  - `s3://realestate-rag-docs/properties/<propertyId>/disclosure-2025.txt`
+  - `s3://realestate-rag-docs/properties/<propertyId>/inspection-summary.txt`
+  - `s3://realestate-rag-docs/properties/<propertyId>/neighborhood-overview.md`
+
+### Knowledge Base Setup (Console)
+
+- Create a Knowledge Base and choose an embeddings model (e.g., Titan Embeddings G1 – Text).
+- Add the S3 data source pointing to your bucket/prefix and run an initial sync.
+- Set `KNOWLEDGE_BASE_ID` in the backend and restart.
+
+### Frontend UX
+
+- The Property page includes an "Ask about this property" widget.
+- Grounded responses include a "Sources" section showing citations returned by the backend.
+
 ## 📚 Smart Contracts
 
 ### FractionalToken.sol
@@ -109,7 +158,6 @@ A decentralized real estate investment platform that enables fractional ownershi
 - ERC-721 non-fungible token for unique property representation
 - Implements OpenZeppelin's ERC721 and ERC721URIStorage
 - Features:
-
   - Unique token IDs for each property
   - Metadata storage with IPFS support
   - Ownership history tracking
