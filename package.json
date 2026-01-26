@@ -30,14 +30,16 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "compile": "truffle compile",
-    "migrate:reset": "truffle migrate --reset --network development",
-    "migrate": "truffle migrate --network development",
-    "migrate:ropsten": "truffle migrate --network development",
-    "migrate:goerli": "truffle migrate --network goerli",
-    "migrate:sepolia": "truffle migrate --network Sepolia",
+    "postinstall": "npm run setup:contracts",
+    "setup:contracts": "truffle compile && node backend/scripts/update_contracts.js",
+    "deploy": "truffle migrate --network development && npm run update:contracts",
+    "deploy:reset": "truffle migrate --reset --network development && node backend/scripts/reset_properties.js && npm run update:contracts",
+    "deploy:goerli": "truffle migrate --network goerli && npm run update:contracts",
+    "deploy:sepolia": "truffle migrate --network sepolia && npm run update:contracts",
+    "update:contracts": "node backend/scripts/update_contracts.js",
     "test:truffle": "truffle test",
     "console": "truffle console --network development",
-    "clean": "rm -rf build/"
+    "clean": "rimraf build/ backend/src/contracts/ frontend/src/contracts/"
   },
   "eslintConfig": {
     "extends": [

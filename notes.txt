@@ -1,8 +1,8 @@
-after updating contracts:
+after updating contracts code:
 > truffle migrate --network development
 > node scripts/update_contracts.js
 
-after resetting properties:
+for migrating and resetting properties:
 truffle migrate --network development --reset
 node scripts/reset_properties.js
 node scripts/update_contracts.js
