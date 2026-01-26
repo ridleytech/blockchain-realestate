@@ -31,6 +31,7 @@ import {
 } from "../utils/blockchain";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import PropertyAIChat from "./PropertyAIChat";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -60,11 +61,11 @@ const PropertyDetail = () => {
 
         // First fetch the property data
         const propertyRes = await fetch(
-          `http://localhost:4000/api/properties/${id}`
+          `http://localhost:4000/api/properties/${id}`,
         );
         if (!propertyRes.ok) {
           throw new Error(
-            `Failed to fetch property: ${propertyRes.statusText}`
+            `Failed to fetch property: ${propertyRes.statusText}`,
           );
         }
 
@@ -85,7 +86,7 @@ const PropertyDetail = () => {
         if (propertyData.fractionalToken) {
           try {
             const contract = getFractionalTokenContract(
-              propertyData.fractionalToken
+              propertyData.fractionalToken,
             );
 
             // Fetch price, balance, and decimals in parallel
@@ -133,7 +134,7 @@ const PropertyDetail = () => {
         // Then fetch transactions
         try {
           const transactionsRes = await fetch(
-            `http://localhost:4000/api/purchase/property/${id}`
+            `http://localhost:4000/api/purchase/property/${id}`,
           );
           if (transactionsRes.ok) {
             const transactionsData = await transactionsRes.json();
@@ -145,7 +146,7 @@ const PropertyDetail = () => {
             if (isMounted && currentUser) {
               const userTransaction = transactions.find(
                 (tx) =>
-                  tx.buyer?._id === currentUser.id && tx.status === "completed"
+                  tx.buyer?._id === currentUser.id && tx.status === "completed",
               );
               if (userTransaction) {
                 setUserShares(userTransaction.shares);
@@ -189,7 +190,7 @@ const PropertyDetail = () => {
 
       if (!property.fractionalToken) {
         throw new Error(
-          "This property is not yet available for fractional ownership. Please contact support."
+          "This property is not yet available for fractional ownership. Please contact support.",
         );
       }
 
@@ -236,7 +237,7 @@ const PropertyDetail = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       // Update UI
@@ -433,6 +434,9 @@ const PropertyDetail = () => {
               )}
             </Card.Body>
           </Card>
+
+          {/* AI Q&A Assistant */}
+          <PropertyAIChat propertyId={id} />
         </Col>
 
         <Col lg={4}>
@@ -627,7 +631,7 @@ const PropertyDetail = () => {
                           {
                             minimumFractionDigits: 6,
                             maximumFractionDigits: 6,
-                          }
+                          },
                         )
                       : "0.000000"}{" "}
                     ETH
@@ -642,7 +646,7 @@ const PropertyDetail = () => {
                       {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      }
+                      },
                     )}
                   </span>
                 </div>

@@ -11,19 +11,22 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const rateLimit = require("express-rate-limit");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const authRouter = require("./routes/auth");
 const propertyRoutes = require("./routes/propertyRoutes");
 const purchaseRoutes = require("./routes/purchaseRoutes");
+const aiRouter = require("./routes/ai");
 
 var app = express();
 
 // Connect to MongoDB
 mongoose
   .connect(
-    process.env.MONGODB_URI || "mongodb://localhost:27017/blockchain-realestate"
+    process.env.MONGODB_URI ||
+      "mongodb://localhost:27017/blockchain-realestate",
   )
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
@@ -79,7 +82,7 @@ const staticOptions = {
 // Serve images from the public/images directory
 app.use(
   "/images",
-  express.static(path.join(__dirname, "public/images"), staticOptions)
+  express.static(path.join(__dirname, "public/images"), staticOptions),
 );
 
 // For backward compatibility, also serve images from root
@@ -91,6 +94,15 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/purchase", purchaseRoutes);
+
+// Basic rate limiting for AI endpoints
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/api/ai", aiLimiter, aiRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
