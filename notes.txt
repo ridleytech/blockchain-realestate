@@ -1,3 +1,13 @@
+after updating contracts code:
+> truffle migrate --network development
+> node scripts/update_contracts.js
+
+for migrating and resetting properties:
+truffle migrate --network development --reset
+node scripts/reset_properties.js
+node scripts/update_contracts.js
+
+
 1_deploy_contracts.js
 =====================
 
@@ -44,13 +54,7 @@ Summary
 
 
 
-(base) rr@Randalls-MacBook-Air blockchain-realestate % npm run migrate
-
 > blockchain-realestate@0.1.0 migrate
-
-
-> truffle migrate --network development
-> node scripts/update_contracts.js
 
 
 [dotenv@17.2.3] injecting env (10) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`

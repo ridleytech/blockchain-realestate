@@ -181,6 +181,7 @@ async function updateDatabase(contracts) {
       // Only update the fields we need to update
       const updates = {
         contractAddress: contracts.propertyNFT,
+        tokenId: tokenId, // Add tokenId to the updates
         isListed: true,
         updatedAt: new Date(),
       };

@@ -41,6 +41,13 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Contract build artifacts
+/build/
+/backend/src/contracts/
+/frontend/src/contracts/
+# But keep the contract source files
+!/contracts/
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
