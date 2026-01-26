@@ -178,10 +178,6 @@ When `KNOWLEDGE_BASE_ID` is set, the backend retrieves top relevant snippets fro
 
 For any questions, feedback, or support, please reach out to [randall.ridley@gmail.com](mailto:randall.ridley@gmail.com)
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
