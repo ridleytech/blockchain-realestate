@@ -1,5 +1,12 @@
 # 🤖 AWS Bedrock RAG Testing Guide
 
+> Quick Start
+>
+> 1. Upload docs to S3: `s3://realestate-rag-docs/properties/<propertyId>/...`
+> 2. Create Bedrock Knowledge Base, add S3 data source, run sync, copy KB ID
+> 3. Backend env: `AWS_REGION`, `KNOWLEDGE_BASE_ID` (optional Guardrails/Model)
+> 4. Run backend and test via cURL or the Property page Q&A
+
 This guide explains how to test the AI Q&A feature powered by Amazon Bedrock with Retrieval Augmented Generation (RAG), what documents it searches, and the value this feature adds to the platform.
 
 ## 🎯 What This Feature Does
@@ -133,6 +140,51 @@ Option B: Frontend
 
 - Open a property page and use the "Ask about this property" widget.
 - RAG active => answer plus Sources list.
+
+## ✅ Testing Checklist (QA)
+
+- Login and obtain a valid JWT; verify `/api/ai/ask` rejects missing/invalid tokens.
+- With `KNOWLEDGE_BASE_ID` unset, ask: "Summarize the property" → Should answer without citations (fallback mode).
+- Set `KNOWLEDGE_BASE_ID`, sync KB, ask: "Summarize key risks and recent maintenance" → Should include citations referencing the property’s S3 docs.
+- Ask about roof status → Expect references to `roof-status.txt` or related.
+- Ask about flood/storm risk → Expect references to `flood-storm-risk.txt`.
+- Exceed 10 requests/min from one IP → Expect rate limit error.
+- Trigger guardrails (e.g., request financial advice) when enabled → Response should be filtered/redirected.
+
+## 📎 DocType → Example Questions
+
+- disclosure-YYYY.txt
+  - "Any known material issues disclosed?"
+- inspection-summary.txt
+  - "What did the last inspection find?"
+- neighborhood-overview.md
+  - "How are schools and amenities nearby?"
+- appraisal-summary.txt
+  - "What’s the appraised value and key adjustments?"
+- comps-overview.md
+  - "What recent sales support this price?"
+- maintenance-log-YYYY.md
+  - "What maintenance was done recently and what’s upcoming?"
+- roof-status.txt
+  - "What’s the roof condition and remaining life?"
+- pest-inspection-summary.txt
+  - "Any termite or pest activity noted?"
+- hvac-overview.txt
+  - "What HVAC systems are installed and when were they serviced?"
+- energy-efficiency.md
+  - "Typical utilities and efficiency features?"
+- insurance-notes.md
+  - "Any special considerations for insurance underwriting?"
+- flood-storm-risk.txt
+  - "Is the property in a flood zone or high storm-risk area?"
+- permits-renovations.md
+  - "What renovations were permitted and when?"
+- safety-checklist.txt
+  - "Any safety concerns or checklist highlights?"
+- seasonal-maintenance-plan.md
+  - "What maintenance is recommended each season?"
+- photo-captions.md
+  - "Which photos show roof/pool/view?"
 
 ## ⚙️ Behavior, Tuning, and Safety
 

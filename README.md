@@ -7,6 +7,8 @@ A decentralized real estate investment platform that enables fractional ownershi
   <p><em>Blockchain Real Estate Platform - Modern Web Interface</em></p>
 </div>
 
+> Testing: Looking to validate AI Q&A with RAG? See the dedicated guide → [README_BEDROCK.md](README_BEDROCK.md)
+
 ## ✨ Features
 
 ### 🏗️ Property Management
@@ -54,6 +56,8 @@ A decentralized real estate investment platform that enables fractional ownershi
 - Grounded answers with optional Bedrock Knowledge Bases (RAG)
 - Citations/Sources displayed for grounded responses
 - Server-side rate limiting and optional Bedrock Guardrails for safer output
+
+For detailed setup, testing steps, and the full list of document types searched in RAG, see: [README_BEDROCK.md](README_BEDROCK.md).
 
 ## 🛠️ Tech Stack
 
