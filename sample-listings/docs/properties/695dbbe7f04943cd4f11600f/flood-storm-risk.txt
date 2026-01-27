@@ -1,0 +1,12 @@
+---
+propertyId: 695dbbe7f04943cd4f11600f
+docType: floodStormRisk
+title: Flood/Storm Risk - Elegant Home in Riverwood
+city: Kingwood
+state: TX
+address: "3510 Riverwood Park Dr, Kingwood, TX 77345, USA"
+---
+FEMAZone: Typical inland residential; verify map
+ElevationContext: Neighborhood elevation above nearby creeks
+PastEvents: No flood claims
+Mitigations: Proper grading; gutter maintenance

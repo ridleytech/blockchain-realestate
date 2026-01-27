@@ -1,0 +1,15 @@
+---
+propertyId: 695dbbe7f04943cd4f11600c
+docType: roofStatus
+title: Roof Status - Spacious Family Home in Porter
+city: Porter
+state: TX
+address: "3310 Bellwick Chase Ln, Porter, TX 77365, USA"
+---
+RoofType: Architectural shingle
+InstallYear: 2012
+LastInspection: 2025-01-10
+ExpectedRemainingLifeYears: 6-10
+Issues: None observed
+Recommendations:
+- Maintain gutters; inspect after storms

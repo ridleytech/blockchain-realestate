@@ -1,0 +1,18 @@
+---
+propertyId: 695dbbe7f04943cd4f116003
+docType: appraisal
+title: Appraisal Summary - Modern Home in Humble
+city: Humble
+state: TX
+address: "3403 Willow Ridge Dr, Humble, TX 77339, USA"
+---
+AppraisalDate: 2025-01-06
+AppraisedValueUSD: 330000
+Methodology: Sales Comparison
+CompsConsidered: 4
+KeyAdjustments:
+- Lot size and interior finishes
+- Age vs. renovated comparables
+Confidence: Moderate
+Notes:
+- Market demand steady for 3BR modern homes in this area.

@@ -1,0 +1,14 @@
+---
+propertyId: 695dbbe7f04943cd4f11600c
+docType: safetyChecklist
+title: Safety Checklist - Spacious Family Home in Porter
+city: Porter
+state: TX
+address: "3310 Bellwick Chase Ln, Porter, TX 77365, USA"
+---
+- GFCI: Kitchen/baths; verify garage
+- Smoke/CO: Present and tested
+- Handrails/Steps: Secure
+- Egress: Windows operable
+Notes:
+- Test GFCI quarterly.

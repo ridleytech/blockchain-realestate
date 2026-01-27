@@ -1,0 +1,19 @@
+---
+propertyId: 695dbbe7f04943cd4f116009
+docType: appraisal
+title: Appraisal Summary - Waterfront Property in Kingwood
+city: Kingwood
+state: TX
+address: "3019 Brook Shore Ct, Kingwood, TX 77345, USA"
+---
+AppraisalDate: 2025-01-11
+AppraisedValueUSD: 800000
+Methodology: Sales Comparison with waterfront premium
+CompsConsidered: 5
+KeyAdjustments:
+- Waterfront frontage and dock
+- Window wall views
+- Lot size and privacy
+Confidence: Moderate-High
+Notes:
+- Limited direct comps; adjusted using nearest waterfront transactions.

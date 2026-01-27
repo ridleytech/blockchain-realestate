@@ -1,0 +1,14 @@
+---
+propertyId: 695dbbe7f04943cd4f11600f
+docType: safetyChecklist
+title: Safety Checklist - Elegant Home in Riverwood
+city: Kingwood
+state: TX
+address: "3510 Riverwood Park Dr, Kingwood, TX 77345, USA"
+---
+- GFCI: Kitchen/baths/garage; pool equipment outlet protected
+- Smoke/CO: Present and tested
+- Pool: Self-closing/latching gates; door/window alarms
+- Egress: Bedroom egress operable
+Notes:
+- Verify pool barrier height and latch operation quarterly.

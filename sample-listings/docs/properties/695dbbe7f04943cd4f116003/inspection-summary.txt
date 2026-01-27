@@ -1,0 +1,31 @@
+---
+propertyId: 695dbbe7f04943cd4f116003
+docType: inspection
+title: Modern Home in Humble
+city: Humble
+state: TX
+address: "3403 Willow Ridge Dr, Humble, TX 77339, USA"
+---
+InspectionDate: 2025-01-12
+Inspector: Lighthouse Inspections
+PropertyId: 695dbbe7f04943cd4f116003
+
+Exterior:
+- Landscaping maintained; no wood-to-soil contact observed.
+
+Roof/Attic:
+- No missing shingles; ventilation adequate.
+
+Interior:
+- No moisture readings above baseline.
+
+Mechanical:
+- HVAC functioning; filters older, recommend replacement.
+- Electrical: No loose connections; breakers test OK.
+- Plumbing: No active leaks; water pressure stable.
+
+Safety:
+- Smoke/CO detectors present; test annually.
+
+Overall Assessment:
+- Move-in ready; routine maintenance recommended.

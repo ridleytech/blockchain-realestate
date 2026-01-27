@@ -1,0 +1,13 @@
+---
+propertyId: 695dbbe7f04943cd4f116000
+docType: floodStormRisk
+title: Flood/Storm Risk - Beautiful Family Home in Kingwood
+city: Kingwood
+state: TX
+address: "26036 Kings Mill Crest Dr, Kingwood, TX 77339, USA"
+---
+FEMAZone: Reference local FEMA map (zone appears outside of Special Flood Hazard Area)
+ElevationContext: Typical neighborhood elevation; not low-lying
+PastEvents: No flood claims reported by owner
+Mitigations: Positive grading away from foundation; gutters maintained
+Notes: Inspect yard drainage during heavy rain events

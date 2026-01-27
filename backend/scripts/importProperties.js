@@ -15,7 +15,7 @@ const connectDB = async () => {
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-      }
+      },
     );
     console.log("MongoDB Connected...");
   } catch (err) {
@@ -29,8 +29,8 @@ const importProperties = async () => {
   try {
     // Read the JSON file
     const data = fs.readFileSync(
-      path.join(__dirname, "../../listings/properties.json"),
-      "utf8"
+      path.join(__dirname, "../../sample-listings/properties.json"),
+      "utf8",
     );
     const properties = JSON.parse(data);
 

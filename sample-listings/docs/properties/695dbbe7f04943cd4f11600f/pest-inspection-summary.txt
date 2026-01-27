@@ -1,0 +1,13 @@
+---
+propertyId: 695dbbe7f04943cd4f11600f
+docType: pestInspection
+title: Pest/Termite Inspection Summary - Elegant Home in Riverwood
+city: Kingwood
+state: TX
+address: "3510 Riverwood Park Dr, Kingwood, TX 77345, USA"
+---
+InspectionDate: 2025-01-21
+Findings: No active termite activity
+Evidence: No mud tubes; wood framing intact
+Treatments: None
+Notes: Annual inspection recommended.

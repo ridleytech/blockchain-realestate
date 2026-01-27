@@ -1,0 +1,18 @@
+---
+propertyId: 695dbbe7f04943cd4f11600c
+docType: appraisal
+title: Appraisal Summary - Spacious Family Home in Porter
+city: Porter
+state: TX
+address: "3310 Bellwick Chase Ln, Porter, TX 77365, USA"
+---
+AppraisalDate: 2025-01-09
+AppraisedValueUSD: 420000
+Methodology: Sales Comparison
+CompsConsidered: 4
+KeyAdjustments:
+- Lot size, interior finishes
+- Age vs. renovated comps
+Confidence: Moderate
+Notes:
+- Family-oriented submarket with steady demand for 4BR.

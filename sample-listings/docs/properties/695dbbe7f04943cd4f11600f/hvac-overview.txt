@@ -1,0 +1,14 @@
+---
+propertyId: 695dbbe7f04943cd4f11600f
+docType: hvacOverview
+title: HVAC Overview - Elegant Home in Riverwood
+city: Kingwood
+state: TX
+address: "3510 Riverwood Park Dr, Kingwood, TX 77345, USA"
+---
+SystemType: Zoned split systems (dual zone)
+InstallYears:
+  - Condenser A: 2019
+  - Condenser B: 2020
+LastService: 2025-01-20
+Filters: 16x25x1 (MERV 8) and 20x20x1; update every 60-90 days
