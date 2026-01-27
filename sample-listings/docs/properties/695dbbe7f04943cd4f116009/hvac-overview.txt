@@ -1,0 +1,17 @@
+---
+propertyId: 695dbbe7f04943cd4f116009
+docType: hvacOverview
+title: HVAC Overview - Waterfront Property in Kingwood
+city: Kingwood
+state: TX
+address: "3019 Brook Shore Ct, Kingwood, TX 77345, USA"
+---
+SystemType: Split system (dual zone)
+InstallYears:
+  - Condenser A: 2017
+  - Condenser B: 2019
+LastService: 2024-12-15
+Filters: 20x20x1 (MERV 8) and 16x25x1; replace every 60-90 days
+TypicalAnnualMaintenanceUSD: 250-400
+Notes:
+- Inspect condenser fins after storm season.

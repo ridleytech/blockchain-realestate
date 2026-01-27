@@ -1,0 +1,13 @@
+---
+propertyId: 695dbbe7f04943cd4f116006
+docType: floodStormRisk
+title: Flood/Storm Risk - Luxury Home in Gated Community
+city: Humble
+state: TX
+address: "519 Trail Springs Ct, Humble, TX 77339, USA"
+---
+FEMAZone: Likely outside Special Flood Hazard Area (verify maps)
+ElevationContext: Typical local elevation; not identified as low-lying
+PastEvents: No flood claims reported
+Mitigations: Grading away from foundation; functional drainage
+Notes: Inspect pool deck drainage during heavy rain events

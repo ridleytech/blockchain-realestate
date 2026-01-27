@@ -1,0 +1,16 @@
+---
+propertyId: 695dbbe7f04943cd4f116006
+docType: safetyChecklist
+title: Safety Checklist - Luxury Home in Gated Community
+city: Humble
+state: TX
+address: "519 Trail Springs Ct, Humble, TX 77339, USA"
+---
+- GFCI: Kitchen, baths, garage (verify garage GFCI)
+- AFCI: Bedrooms per code (2018)
+- Smoke/CO: Present on each floor and near sleeping areas
+- Pool: Self-closing/latching gates; door alarms; compliant barrier height
+- Handrails/Steps: Secure and at proper height
+- Egress: Bedroom windows operable
+Notes:
+- Re-test GFCI/AFCI quarterly and after electrical work.

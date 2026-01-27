@@ -1,0 +1,19 @@
+---
+propertyId: 695dbbe7f04943cd4f116006
+docType: appraisal
+title: Appraisal Summary - Luxury Home in Gated Community
+city: Humble
+state: TX
+address: "519 Trail Springs Ct, Humble, TX 77339, USA"
+---
+AppraisalDate: 2025-01-07
+AppraisedValueUSD: 680000
+Methodology: Sales Comparison
+CompsConsidered: 5
+KeyAdjustments:
+- Pool and outdoor living area
+- Gated community premium
+- Bedroom/bath count
+Confidence: High
+Notes:
+- Luxury segment shows stable activity; gated communities attract premiums.

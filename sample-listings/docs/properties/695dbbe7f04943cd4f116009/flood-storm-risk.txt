@@ -1,0 +1,13 @@
+---
+propertyId: 695dbbe7f04943cd4f116009
+docType: floodStormRisk
+title: Flood/Storm Risk - Waterfront Property in Kingwood
+city: Kingwood
+state: TX
+address: "3019 Brook Shore Ct, Kingwood, TX 77345, USA"
+---
+FEMAZone: Check FEMA maps; portions near waterways may be in advisory zones
+ElevationContext: Waterfront lot; elevation above dock level
+PastEvents: No claims reported; routine post-storm inspections performed
+Mitigations: Window/door re-caulking, maintained drainage, dock upkeep
+Notes: Consider flood insurance regardless of mandatory zone status.

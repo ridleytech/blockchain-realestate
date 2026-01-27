@@ -1,0 +1,15 @@
+---
+propertyId: 695dbbe7f04943cd4f11600c
+docType: hvacOverview
+title: HVAC Overview - Spacious Family Home in Porter
+city: Porter
+state: TX
+address: "3310 Bellwick Chase Ln, Porter, TX 77365, USA"
+---
+SystemType: Split system (single zone)
+InstallYears:
+  - Condenser: 2016
+  - Furnace: 2012
+LastService: 2024-10-30
+Filters: 16x25x1 (MERV 8); replace every 60-90 days
+TypicalAnnualMaintenanceUSD: 180-300

@@ -1,0 +1,16 @@
+---
+propertyId: 695dbbe7f04943cd4f116009
+docType: roofStatus
+title: Roof Status - Waterfront Property in Kingwood
+city: Kingwood
+state: TX
+address: "3019 Brook Shore Ct, Kingwood, TX 77345, USA"
+---
+RoofType: Architectural shingle
+InstallYear: 2015
+LastInspection: 2025-01-20
+ExpectedRemainingLifeYears: 10-12
+Issues: None observed; monitor after high-wind events
+Recommendations:
+- Post-storm inspections
+- Maintain tree clearance from roofline

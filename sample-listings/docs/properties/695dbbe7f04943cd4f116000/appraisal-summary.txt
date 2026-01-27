@@ -1,0 +1,19 @@
+---
+propertyId: 695dbbe7f04943cd4f116000
+docType: appraisal
+title: Appraisal Summary - Beautiful Family Home in Kingwood
+city: Kingwood
+state: TX
+address: "26036 Kings Mill Crest Dr, Kingwood, TX 77339, USA"
+---
+AppraisalDate: 2025-01-05
+AppraisedValueUSD: 490000
+Methodology: Sales Comparison (primary), Cost (secondary check)
+CompsConsidered: 4
+KeyAdjustments:
+- Bedroom/Bath count and lot size
+- Recent interior updates
+- Proximity to schools and parks
+Confidence: Moderate-High
+Notes:
+- Market shows stable demand for 4BR homes in this submarket.
