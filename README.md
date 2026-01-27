@@ -55,6 +55,8 @@ A decentralized real estate investment platform that enables fractional ownershi
 - Citations/Sources displayed for grounded responses
 - Server-side rate limiting and optional Bedrock Guardrails for safer output
 
+For detailed setup, testing steps, and the full list of document types searched in RAG, see: [README_BEDROCK.md](README_BEDROCK.md).
+
 ## 🛠️ Tech Stack
 
 ### Frontend

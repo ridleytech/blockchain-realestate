@@ -1,5 +1,12 @@
 # 🤖 AWS Bedrock RAG Testing Guide
 
+> Quick Start
+>
+> 1. Upload docs to S3: `s3://realestate-rag-docs/properties/<propertyId>/...`
+> 2. Create Bedrock Knowledge Base, add S3 data source, run sync, copy KB ID
+> 3. Backend env: `AWS_REGION`, `KNOWLEDGE_BASE_ID` (optional Guardrails/Model)
+> 4. Run backend and test via cURL or the Property page Q&A
+
 This guide explains how to test the AI Q&A feature powered by Amazon Bedrock with Retrieval Augmented Generation (RAG), what documents it searches, and the value this feature adds to the platform.
 
 ## 🎯 What This Feature Does
