@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
-const properties = require("../../listings/properties.json");
+const properties = require("../../sample-listings/properties.json");
 
 // Directory to save property images
 const assetsDir = path.join(__dirname, "..", "public", "assets", "properties");
@@ -76,12 +76,12 @@ const processProperties = async () => {
 
   // Save updated properties
   fs.writeFileSync(
-    path.join(__dirname, "..", "listings", "properties_updated.json"),
-    JSON.stringify(updatedProperties, null, 2)
+    path.join(__dirname, "..", "sample-listings", "properties_updated.json"),
+    JSON.stringify(updatedProperties, null, 2),
   );
 
   console.log(
-    "Processing complete. Updated properties saved to properties_updated.json"
+    "Processing complete. Updated properties saved to properties_updated.json",
   );
 };
 

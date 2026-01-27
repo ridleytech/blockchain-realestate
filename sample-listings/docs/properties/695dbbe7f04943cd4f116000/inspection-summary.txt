@@ -1,0 +1,37 @@
+---
+propertyId: 695dbbe7f04943cd4f116000
+docType: inspection
+title: Beautiful Family Home in Kingwood
+city: Kingwood
+state: TX
+address: "26036 Kings Mill Crest Dr, Kingwood, TX 77339, USA"
+---
+InspectionDate: 2025-01-15
+Inspector: Acme Home Inspections
+PropertyId: 695dbbe7f04943cd4f116000
+
+Exterior:
+- Siding and trim in good condition; recommend spot touch-up paint on fascia.
+- Grading slopes away from foundation; gutters clear.
+
+Roof/Attic:
+- Shingles show normal wear; flashing intact.
+- Attic insulation approx. R-38; no moisture detected.
+
+Interior:
+- No evidence of active leaks or staining.
+- Doors/windows operate properly; weatherstripping acceptable.
+
+Mechanical:
+- HVAC operating within expected delta-T; change filters.
+- Electrical panel labeling complete; no double taps observed.
+- Water heater temps within recommended range.
+
+Plumbing:
+- Fixtures functional; recommend re-caulking primary shower.
+
+Safety:
+- Recommend adding GFCI protection in garage outlets.
+
+Overall Assessment:
+- Property in good condition with minor routine maintenance items.

@@ -1,0 +1,34 @@
+---
+propertyId: 695dbbe7f04943cd4f11600f
+docType: disclosure
+title: Elegant Home in Riverwood
+city: Kingwood
+state: TX
+address: "3510 Riverwood Park Dr, Kingwood, TX 77345, USA"
+---
+PropertyId: 695dbbe7f04943cd4f11600f
+Title: Elegant Home in Riverwood
+Address: 3510 Riverwood Park Dr, Kingwood, TX 77345, USA
+YearBuilt: 2019
+Beds/Baths: 5 / 4.5
+Size: 4850 sqft
+AskingPriceUSD: 925000
+
+Summary:
+Luxury home with gourmet kitchen and resort-style backyard. No known structural issues.
+
+Roof:
+- Type: Architectural shingle
+- Age: 2019
+
+HVAC:
+- Multi-zone; last service 2025-01
+
+Plumbing:
+- No leaks observed; tankless heater 2019
+
+Electrical:
+- Panel 2019; AFCI/GFCI present per code
+
+Pool/Backyard:
+- Pool equipment functional; routine maintenance recommended
