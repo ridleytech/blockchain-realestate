@@ -1,0 +1,14 @@
+---
+propertyId: 695dbbe7f04943cd4f116009
+docType: safetyChecklist
+title: Safety Checklist - Waterfront Property in Kingwood
+city: Kingwood
+state: TX
+address: "3019 Brook Shore Ct, Kingwood, TX 77345, USA"
+---
+- GFCI/AFCI: Verify in kitchen/baths and lakeside outlets
+- Smoke/CO: Present and tested
+- Dock: Railings/cleats secure; non-slip surfaces
+- Egress: Windows/doors operable; door alarms for lake access (if desired)
+Notes:
+- Inspect dock after major storms; replace worn cleats.

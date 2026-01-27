@@ -1,0 +1,29 @@
+---
+propertyId: 695dbbe7f04943cd4f11600f
+docType: inspection
+title: Elegant Home in Riverwood
+city: Kingwood
+state: TX
+address: "3510 Riverwood Park Dr, Kingwood, TX 77345, USA"
+---
+InspectionDate: 2025-01-22
+Inspector: Premier Home Inspections
+PropertyId: 695dbbe7f04943cd4f11600f
+
+Exterior/Pool:
+- Pool and decking in good condition; test chemical balance weekly.
+
+Roof/Attic:
+- No active leaks; ridge and hip caps secure.
+
+Interior:
+- High-quality finishes; normal wear in high-traffic areas.
+
+Mechanical:
+- Zoned HVAC operating; schedule seasonal tune-ups.
+
+Safety:
+- Verify compliant pool barrier mechanisms.
+
+Overall Assessment:
+- Excellent condition; luxury finishes well maintained.

@@ -1,0 +1,34 @@
+---
+propertyId: 695dbbe7f04943cd4f11600c
+docType: disclosure
+title: Spacious Family Home in Porter
+city: Porter
+state: TX
+address: "3310 Bellwick Chase Ln, Porter, TX 77365, USA"
+---
+PropertyId: 695dbbe7f04943cd4f11600c
+Title: Spacious Family Home in Porter
+Address: 3310 Bellwick Chase Ln, Porter, TX 77365, USA
+YearBuilt: 2012
+Beds/Baths: 4 / 2.5
+Size: 2950 sqft
+AskingPriceUSD: 415000
+
+Summary:
+Open floor plan with modern kitchen and large backyard. No known structural issues.
+
+Roof:
+- Type: Architectural shingle
+- Age: 2012
+
+HVAC:
+- Last serviced 2024-10; operating normally
+
+Plumbing:
+- No leaks observed; water heater 2016
+
+Electrical:
+- Panel 2012; recommend labeling review for completeness
+
+Known Issues & Disclosures:
+- Section of backyard fence aged; recommend repair/replacement

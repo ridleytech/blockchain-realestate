@@ -1,0 +1,14 @@
+---
+propertyId: 695dbbe7f04943cd4f11600c
+docType: pestInspection
+title: Pest/Termite Inspection Summary - Spacious Family Home in Porter
+city: Porter
+state: TX
+address: "3310 Bellwick Chase Ln, Porter, TX 77365, USA"
+---
+InspectionDate: 2025-01-15
+Findings: No active infestation; minor exterior carpenter ant activity treated
+Evidence: No interior damage
+Treatments: Exterior perimeter spray
+Warranty: 6-month retreatment
+Notes: Maintain vegetation clearance around siding.

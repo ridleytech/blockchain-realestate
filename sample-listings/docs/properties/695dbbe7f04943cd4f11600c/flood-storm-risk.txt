@@ -1,0 +1,12 @@
+---
+propertyId: 695dbbe7f04943cd4f11600c
+docType: floodStormRisk
+title: Flood/Storm Risk - Spacious Family Home in Porter
+city: Porter
+state: TX
+address: "3310 Bellwick Chase Ln, Porter, TX 77365, USA"
+---
+FEMAZone: Check local FEMA maps; typical inland residential risk
+ElevationContext: Neighborhood not near major waterways
+PastEvents: No reported flood claims
+Mitigations: Grading in good condition; gutters maintained

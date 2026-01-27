@@ -1,0 +1,29 @@
+---
+propertyId: 695dbbe7f04943cd4f116006
+docType: inspection
+title: Luxury Home in Gated Community
+city: Humble
+state: TX
+address: "519 Trail Springs Ct, Humble, TX 77339, USA"
+---
+InspectionDate: 2025-01-18
+Inspector: Elite Property Inspectors
+PropertyId: 695dbbe7f04943cd4f116006
+
+Exterior/Pool:
+- Pool equipment operational; recommend routine chemical balancing.
+
+Roof/Attic:
+- Flashings and vents sealed; no active leaks.
+
+Interior:
+- High-end finishes intact; minor touch-up paint recommended in hallway.
+
+Mechanical:
+- HVAC zoning operating properly; test thermostats seasonally.
+
+Safety:
+- Confirm self-closing gates and alarms comply with pool safety standards.
+
+Overall Assessment:
+- Excellent condition; minimal maintenance items.

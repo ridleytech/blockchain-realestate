@@ -1,0 +1,40 @@
+---
+propertyId: 695dbbe7f04943cd4f116003
+docType: disclosure
+title: Modern Home in Humble
+city: Humble
+state: TX
+address: "3403 Willow Ridge Dr, Humble, TX 77339, USA"
+---
+PropertyId: 695dbbe7f04943cd4f116003
+Title: Modern Home in Humble
+Address: 3403 Willow Ridge Dr, Humble, TX 77339, USA
+YearBuilt: 2010
+Beds/Baths: 3 / 2
+Size: 2250 sqft
+AskingPriceUSD: 325000
+
+Summary:
+Updated single-family home with modern kitchen and landscaping. No known structural or water intrusion issues.
+
+Roof:
+- Type: Architectural shingle
+- Last replacement: 2018
+- Condition: Good
+
+HVAC:
+- System age: 2019
+- Last service: 2024-11
+
+Plumbing:
+- Type: PEX
+- Water heater: 2018
+
+Electrical:
+- Panel original to 2010; no defects observed
+
+Known Issues & Disclosures:
+- Minor fence wear; recommend future replacement of a few pickets
+
+Recent Improvements:
+- Kitchen cabinet refacing 2023; appliance upgrades 2022

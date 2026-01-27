@@ -1,0 +1,14 @@
+---
+propertyId: 695dbbe7f04943cd4f116009
+docType: pestInspection
+title: Pest/Termite Inspection Summary - Waterfront Property in Kingwood
+city: Kingwood
+state: TX
+address: "3019 Brook Shore Ct, Kingwood, TX 77345, USA"
+---
+InspectionDate: 2025-01-18
+Findings: No active termite activity observed
+Evidence: No mud tubes; sill plates sound
+Treatments: None
+Warranty: N/A
+Notes: Reinspect seasonally due to proximity to water.

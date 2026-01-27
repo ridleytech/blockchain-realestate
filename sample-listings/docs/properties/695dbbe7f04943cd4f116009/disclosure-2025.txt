@@ -1,0 +1,35 @@
+---
+propertyId: 695dbbe7f04943cd4f116009
+docType: disclosure
+title: Waterfront Property in Kingwood
+city: Kingwood
+state: TX
+address: "3019 Brook Shore Ct, Kingwood, TX 77345, USA"
+---
+PropertyId: 695dbbe7f04943cd4f116009
+Title: Waterfront Property in Kingwood
+Address: 3019 Brook Shore Ct, Kingwood, TX 77345, USA
+YearBuilt: 2015
+Beds/Baths: 4 / 3
+Size: 3800 sqft
+AskingPriceUSD: 789000
+
+Summary:
+Stunning waterfront home with private dock and expansive windows. No known structural issues.
+
+Roof:
+- Type: Architectural shingle
+- Age: 2015
+
+HVAC:
+- Dual systems; last serviced 2024-12
+
+Plumbing:
+- No leaks observed; water heater 2017
+
+Electrical:
+- Panel 2015; GFCIs present near wet areas
+
+Waterfront Notes:
+- Private dock in good condition; verify local permitting for modifications
+- Recommend routine inspection after major storms

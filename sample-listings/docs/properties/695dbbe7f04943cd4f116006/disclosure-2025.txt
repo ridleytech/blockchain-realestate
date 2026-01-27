@@ -1,0 +1,37 @@
+---
+propertyId: 695dbbe7f04943cd4f116006
+docType: disclosure
+title: Luxury Home in Gated Community
+city: Humble
+state: TX
+address: "519 Trail Springs Ct, Humble, TX 77339, USA"
+---
+PropertyId: 695dbbe7f04943cd4f116006
+Title: Luxury Home in Gated Community
+Address: 519 Trail Springs Ct, Humble, TX 77339, USA
+YearBuilt: 2018
+Beds/Baths: 5 / 3.5
+Size: 4200 sqft
+AskingPriceUSD: 675000
+
+Summary:
+High-end finishes with pool and outdoor living area. No known structural issues. HOA-managed gated access.
+
+Roof:
+- Type: Architectural shingle
+- Age: 2018
+
+HVAC:
+- Multi-zone; last service 2025-01; functioning as expected
+
+Plumbing:
+- No leaks observed; water heater 2019
+
+Electrical:
+- Panel 2018; AFCI for bedroom circuits present
+
+Pool:
+- Surface in good condition; equipment serviced 2024-10
+
+HOA/Restrictions:
+- Gated community with architectural controls and amenity access

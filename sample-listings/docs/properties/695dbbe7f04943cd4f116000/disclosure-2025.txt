@@ -1,0 +1,55 @@
+---
+propertyId: 695dbbe7f04943cd4f116000
+docType: disclosure
+title: Beautiful Family Home in Kingwood
+city: Kingwood
+state: TX
+address: "26036 Kings Mill Crest Dr, Kingwood, TX 77339, USA"
+---
+PropertyId: 695dbbe7f04943cd4f116000
+Title: Beautiful Family Home in Kingwood
+Address: 26036 Kings Mill Crest Dr, Kingwood, TX 77339, USA
+YearBuilt: 2005
+Beds/Baths: 4 / 2.5
+Size: 2850 sqft
+AskingPriceUSD: 485000
+
+Summary:
+Well-maintained single-family home with an open floor plan and large backyard. No known structural issues. Regular maintenance performed.
+
+Roof:
+- Type: Asphalt shingle
+- Last replacement: 2016
+- Condition: Good; minor granule wear consistent with age
+
+HVAC:
+- System age: 2018 condenser; furnace 2015
+- Last service: 2025-01
+- Condition: Good; recommends filter change quarterly
+
+Plumbing:
+- Type: PEX
+- Water heater: 2017 (50 gal)
+- Notes: No leaks observed; normal water pressure
+
+Electrical:
+- Panel updated: 2015
+- GFCI/AFCI: Kitchen and bath GFCIs present; recommend GFCI in garage
+
+Foundation:
+- Slab-on-grade; no movement or differential settling observed
+
+Appliances & Fixtures:
+- Refrigerator (included), dishwasher 2021, range 2019
+- Minor caulking recommended in primary bath shower
+
+Known Issues & Disclosures:
+- Driveway has hairline cracks (cosmetic)
+- Two fence posts leaning; recommend reinforcement
+
+Recent Improvements:
+- Interior paint (2024), landscaping refresh (2024)
+
+Warranties/Notes:
+- Roof workmanship warranty expired 2021
+- No prior flood claims reported

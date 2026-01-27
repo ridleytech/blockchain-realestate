@@ -1,0 +1,423 @@
+[
+  {
+    "_id": {
+      "$oid": "695dbbe7f04943cd4f116000"
+    },
+    "title": "Beautiful Family Home in Kingwood",
+    "description": "Spacious 4-bedroom home with modern amenities, large backyard, and open floor plan. Perfect for families looking for comfort and style in a great neighborhood.",
+    "address": {
+      "street": "26036 Kings Mill Crest Dr",
+      "city": "Kingwood",
+      "state": "TX",
+      "zipCode": "77339",
+      "country": "USA"
+    },
+    "price": 485000,
+    "totalShares": 1000,
+    "sharePrice": 485,
+    "images": [
+      {
+        "url": "1.webp",
+        "isMain": true,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f116001"
+        }
+      },
+      {
+        "url": "1-2.webp",
+        "isMain": false,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f116002"
+        }
+      }
+    ],
+    "propertyType": "House",
+    "size": 2850,
+    "bedrooms": 4,
+    "bathrooms": 2.5,
+    "yearBuilt": 2005,
+    "contractAddress": "0x827E85c0362c5416b8A798618DAaC528Af1AA04E",
+    "isListed": true,
+    "owner": {
+      "$oid": "65b9d3a1c9e77b001f123456"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1767750631139"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1767973965270"
+      }
+    },
+    "availableShares": 1000,
+    "features": [],
+    "__v": 3,
+    "owners": [],
+    "fractionalToken": "0x163E7A2A9A4f64913D0a5Dca64B0e063125C0B67",
+    "tokenId": 1,
+    "lister": {
+      "$oid": "69605f3af76c92ece0e70f94"
+    },
+    "currentOwners": [],
+    "ownershipHistory": [],
+    "priceCurrency": "USD"
+  },
+  {
+    "_id": {
+      "$oid": "695dbbe7f04943cd4f116003"
+    },
+    "title": "Modern Home in Humble",
+    "description": "Stunning 3-bedroom home featuring a modern design, updated kitchen, and beautiful landscaping. Close to schools and shopping centers.",
+    "address": {
+      "street": "3403 Willow Ridge Dr",
+      "city": "Humble",
+      "state": "TX",
+      "zipCode": "77339",
+      "country": "USA"
+    },
+    "price": 325000,
+    "totalShares": 1000,
+    "sharePrice": 325,
+    "images": [
+      {
+        "url": "2.webp",
+        "isMain": true,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f116004"
+        }
+      },
+      {
+        "url": "2-1.webp",
+        "isMain": false,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f116005"
+        }
+      }
+    ],
+    "propertyType": "House",
+    "size": 2250,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "yearBuilt": 2010,
+    "contractAddress": "0x827E85c0362c5416b8A798618DAaC528Af1AA04E",
+    "isListed": true,
+    "owner": {
+      "$oid": "65b9d3a1c9e77b001f123456"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1767750631139"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1767973965308"
+      }
+    },
+    "availableShares": 1000,
+    "features": [],
+    "__v": 1,
+    "owners": [],
+    "fractionalToken": "0xa605D0F83448Ec2b4FA2691750885Db15ef3490f",
+    "tokenId": 2,
+    "lister": {
+      "$oid": "69605f3af76c92ece0e70f94"
+    },
+    "currentOwners": [],
+    "ownershipHistory": []
+  },
+  {
+    "_id": {
+      "$oid": "695dbbe7f04943cd4f116006"
+    },
+    "title": "Luxury Home in Gated Community",
+    "description": "Elegant 5-bedroom home with high-end finishes, swimming pool, and spacious outdoor living area. Located in a prestigious gated community.",
+    "address": {
+      "street": "519 Trail Springs Ct",
+      "city": "Humble",
+      "state": "TX",
+      "zipCode": "77339",
+      "country": "USA"
+    },
+    "price": 675000,
+    "totalShares": 1500,
+    "sharePrice": 450,
+    "images": [
+      {
+        "url": "3.webp",
+        "isMain": true,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f116007"
+        }
+      },
+      {
+        "url": "3-1.webp",
+        "isMain": false,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f116008"
+        }
+      }
+    ],
+    "propertyType": "House",
+    "size": 4200,
+    "bedrooms": 5,
+    "bathrooms": 3.5,
+    "yearBuilt": 2018,
+    "contractAddress": "0x827E85c0362c5416b8A798618DAaC528Af1AA04E",
+    "isListed": true,
+    "owner": {
+      "$oid": "65b9d3a1c9e77b001f123456"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1767750631139"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1767973965320"
+      }
+    },
+    "availableShares": 1500,
+    "features": [],
+    "__v": 2,
+    "owners": [],
+    "fractionalToken": "0x3eBB67327362Cb2c3960312187930fF15520001b",
+    "tokenId": 3,
+    "lister": {
+      "$oid": "69605f3af76c92ece0e70f94"
+    },
+    "currentOwners": [],
+    "ownershipHistory": [],
+    "priceCurrency": "USD"
+  },
+  {
+    "_id": {
+      "$oid": "695dbbe7f04943cd4f116009"
+    },
+    "title": "Waterfront Property in Kingwood",
+    "description": "Stunning waterfront property with private dock, large windows with water views, and modern amenities. Perfect for those who love water activities.",
+    "address": {
+      "street": "3019 Brook Shore Ct",
+      "city": "Kingwood",
+      "state": "TX",
+      "zipCode": "77345",
+      "country": "USA"
+    },
+    "price": 789000,
+    "totalShares": 2000,
+    "sharePrice": 394.5,
+    "images": [
+      {
+        "url": "4.webp",
+        "isMain": true,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f11600a"
+        }
+      },
+      {
+        "url": "4-1.webp",
+        "isMain": false,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f11600b"
+        }
+      }
+    ],
+    "propertyType": "House",
+    "size": 3800,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "yearBuilt": 2015,
+    "contractAddress": "0x827E85c0362c5416b8A798618DAaC528Af1AA04E",
+    "isListed": true,
+    "owner": {
+      "$oid": "65b9d3a1c9e77b001f123456"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1767750631139"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1767973965329"
+      }
+    },
+    "availableShares": 2000,
+    "features": [],
+    "__v": 1,
+    "owners": [],
+    "fractionalToken": "0xEf2E7011D165FeC0978f3Af428e334EbB6e9a414",
+    "tokenId": 4,
+    "lister": {
+      "$oid": "69605f3af76c92ece0e70f94"
+    },
+    "currentOwners": [],
+    "ownershipHistory": []
+  },
+  {
+    "_id": {
+      "$oid": "695dbbe7f04943cd4f11600c"
+    },
+    "title": "Spacious Family Home in Porter",
+    "description": "Beautifully maintained 4-bedroom home with open floor plan, modern kitchen, and large backyard. Great for entertaining and family living.",
+    "address": {
+      "street": "3310 Bellwick Chase Ln",
+      "city": "Porter",
+      "state": "TX",
+      "zipCode": "77365",
+      "country": "USA"
+    },
+    "price": 415000,
+    "totalShares": 1000,
+    "sharePrice": 415,
+    "images": [
+      {
+        "url": "5.webp",
+        "isMain": true,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f11600d"
+        }
+      },
+      {
+        "url": "5-1.webp",
+        "isMain": false,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f11600e"
+        }
+      }
+    ],
+    "propertyType": "House",
+    "size": 2950,
+    "bedrooms": 4,
+    "bathrooms": 2.5,
+    "yearBuilt": 2012,
+    "contractAddress": "0x827E85c0362c5416b8A798618DAaC528Af1AA04E",
+    "isListed": true,
+    "owner": {
+      "$oid": "65b9d3a1c9e77b001f123456"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1767750631139"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1767974042232"
+      }
+    },
+    "availableShares": 994,
+    "features": [],
+    "__v": 5,
+    "owners": [],
+    "fractionalToken": "0x61389079CEd4918Cd0bF2DfDFe7334cf21cfdb70",
+    "tokenId": 5,
+    "lister": {
+      "$oid": "69605f3af76c92ece0e70f94"
+    },
+    "currentOwners": [
+      {
+        "user": {
+          "$oid": "695de9fe682edb9d6fc1fe5e"
+        },
+        "shares": 3,
+        "purchaseDate": {
+          "$date": {
+            "$numberLong": "1767974042183"
+          }
+        },
+        "transactionHash": "0x9b50a7ef01f280aaaaef703bf939908597648f69b8b582ac37b7a3b8d240ab63",
+        "_id": {
+          "$oid": "6961249ad87dab0718603772"
+        }
+      }
+    ],
+    "ownershipHistory": [
+      {
+        "user": {
+          "$oid": "695de9fe682edb9d6fc1fe5e"
+        },
+        "shares": 3,
+        "transactionType": "purchase",
+        "transactionHash": "0x9b50a7ef01f280aaaaef703bf939908597648f69b8b582ac37b7a3b8d240ab63",
+        "timestamp": {
+          "$date": {
+            "$numberLong": "1767974042188"
+          }
+        },
+        "_id": {
+          "$oid": "6961249ad87dab0718603773"
+        }
+      }
+    ],
+    "priceCurrency": "USD"
+  },
+  {
+    "_id": {
+      "$oid": "695dbbe7f04943cd4f11600f"
+    },
+    "title": "Elegant Home in Riverwood",
+    "description": "Stunning 5-bedroom home with luxurious finishes, gourmet kitchen, and resort-style backyard with pool. Located in the prestigious Riverwood community.",
+    "address": {
+      "street": "3510 Riverwood Park Dr",
+      "city": "Kingwood",
+      "state": "TX",
+      "zipCode": "77345",
+      "country": "USA"
+    },
+    "price": 925000,
+    "totalShares": 2500,
+    "sharePrice": 370,
+    "images": [
+      {
+        "url": "6.webp",
+        "isMain": true,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f116010"
+        }
+      },
+      {
+        "url": "6-1.webp",
+        "isMain": false,
+        "_id": {
+          "$oid": "695dbbe7f04943cd4f116011"
+        }
+      }
+    ],
+    "propertyType": "House",
+    "size": 4850,
+    "bedrooms": 5,
+    "bathrooms": 4.5,
+    "yearBuilt": 2019,
+    "contractAddress": "0x827E85c0362c5416b8A798618DAaC528Af1AA04E",
+    "isListed": true,
+    "owner": {
+      "$oid": "65b9d3a1c9e77b001f123456"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1767750631139"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1767973965368"
+      }
+    },
+    "availableShares": 2500,
+    "features": [],
+    "__v": 2,
+    "owners": [],
+    "fractionalToken": "0xD7A6623b47907fCf185cAd15E958377bcE263557",
+    "tokenId": 6,
+    "lister": {
+      "$oid": "69605f3af76c92ece0e70f94"
+    },
+    "currentOwners": [],
+    "ownershipHistory": [],
+    "priceCurrency": "USD"
+  }
+]

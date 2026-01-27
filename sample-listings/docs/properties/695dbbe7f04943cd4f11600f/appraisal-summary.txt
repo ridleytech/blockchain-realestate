@@ -1,0 +1,18 @@
+---
+propertyId: 695dbbe7f04943cd4f11600f
+docType: appraisal
+title: Appraisal Summary - Elegant Home in Riverwood
+city: Kingwood
+state: TX
+address: "3510 Riverwood Park Dr, Kingwood, TX 77345, USA"
+---
+AppraisalDate: 2025-01-13
+AppraisedValueUSD: 935000
+Methodology: Sales Comparison
+CompsConsidered: 5
+KeyAdjustments:
+- Pool, lot size, and luxury finishes
+- Bedroom/bath count; recent build year
+Confidence: High
+Notes:
+- Strong luxury demand within Riverwood.

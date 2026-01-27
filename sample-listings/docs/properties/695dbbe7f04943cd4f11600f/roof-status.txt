@@ -1,0 +1,13 @@
+---
+propertyId: 695dbbe7f04943cd4f11600f
+docType: roofStatus
+title: Roof Status - Elegant Home in Riverwood
+city: Kingwood
+state: TX
+address: "3510 Riverwood Park Dr, Kingwood, TX 77345, USA"
+---
+RoofType: Architectural shingle
+InstallYear: 2019
+LastInspection: 2025-01-22
+ExpectedRemainingLifeYears: 15-20
+Issues: None observed

@@ -1,0 +1,17 @@
+---
+propertyId: 695dbbe7f04943cd4f116000
+docType: hvacOverview
+title: HVAC Overview - Beautiful Family Home in Kingwood
+city: Kingwood
+state: TX
+address: "26036 Kings Mill Crest Dr, Kingwood, TX 77339, USA"
+---
+SystemType: Split system (single zone)
+InstallYears:
+  - Condenser: 2018
+  - Furnace: 2015
+LastService: 2025-01-10
+Filters: 16x25x1 (MERV 8 recommended); change every 60-90 days
+TypicalAnnualMaintenanceUSD: 200-350
+Notes:
+- Maintain clearances around outdoor condenser.

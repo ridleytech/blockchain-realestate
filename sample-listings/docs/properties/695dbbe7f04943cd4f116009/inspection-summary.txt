@@ -1,0 +1,29 @@
+---
+propertyId: 695dbbe7f04943cd4f116009
+docType: inspection
+title: Waterfront Property in Kingwood
+city: Kingwood
+state: TX
+address: "3019 Brook Shore Ct, Kingwood, TX 77345, USA"
+---
+InspectionDate: 2025-01-20
+Inspector: Coastal Home Inspectors
+PropertyId: 695dbbe7f04943cd4f116009
+
+Exterior/Waterfront:
+- Dock structural components appear sound; confirm tie-off hardware annually.
+
+Roof/Attic:
+- No active leaks observed; shingles intact.
+
+Interior:
+- Large windows well-sealed; recommend inspect and re-caulk every 2-3 years.
+
+Mechanical:
+- HVAC operational; schedule filter changes and seasonal checks.
+
+Safety:
+- Ensure GFCI/AFCI protection near water-facing outlets.
+
+Overall Assessment:
+- Very good condition; waterfront-specific maintenance advised.
