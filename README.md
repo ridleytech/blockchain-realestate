@@ -7,6 +7,8 @@ A decentralized real estate investment platform that enables fractional ownershi
   <p><em>Blockchain Real Estate Platform - Modern Web Interface</em></p>
 </div>
 
+> Testing: Looking to validate AI Q&A with RAG? See the dedicated guide → [README_BEDROCK.md](README_BEDROCK.md)
+
 ## ✨ Features
 
 ### 🏗️ Property Management
