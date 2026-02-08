@@ -4,10 +4,7 @@ A decentralized real estate investment platform that enables fractional ownershi
 
 <div align="center">
   <img src="assets/web-screenshot.png" alt="Blockchain Real Estate Platform Screenshot" width="800" />
-  <p><em>Blockchain Real Estate Platform - Modern Web Interface</em></p>
 </div>
-
-> Testing: Looking to validate AI Q&A with RAG? See the dedicated guide → [README_BEDROCK.md](README_BEDROCK.md)
 
 ## ✨ Features
 
@@ -102,41 +99,6 @@ For detailed setup, testing steps, and the full list of document types searched 
 - MongoDB
 - Ganache (for local development)
 - MetaMask browser extension
-
-## 🤖 AI & AWS Bedrock Setup
-
-- Enable Amazon Bedrock in your AWS account and the target model (e.g., Claude 3.5 Sonnet).
-- Provide AWS credentials with permissions to invoke Bedrock Runtime and Agent Runtime.
-- Backend environment variables:
-  - `AWS_REGION` (e.g., `us-east-1`)
-  - `BEDROCK_MODEL_ID` (optional, defaults to Claude 3.5 Sonnet)
-  - `BEDROCK_GUARDRAIL_ID` and `BEDROCK_GUARDRAIL_VERSION` (optional, enable Guardrails)
-  - `KNOWLEDGE_BASE_ID` (optional, enables RAG via Bedrock Knowledge Bases)
-
-### API
-
-- `POST /api/ai/ask`
-  - Body: `{ "propertyId": string, "question": string }`
-  - Response: `{ success: boolean, answer: string, citations?: Array<{ source: string }> }`
-  - Notes: Rate-limited; JWT auth required.
-
-## 📄 RAG with Bedrock Knowledge Bases
-
-When `KNOWLEDGE_BASE_ID` is set, the backend retrieves top relevant snippets from a Bedrock Knowledge Base and grounds answers with citations.
-
-### Document Organization (S3)
-
-- Bucket example: `s3://realestate-rag-docs/`
-- Per-property structure:
-  - `s3://realestate-rag-docs/properties/<propertyId>/disclosure-2025.txt`
-  - `s3://realestate-rag-docs/properties/<propertyId>/inspection-summary.txt`
-  - `s3://realestate-rag-docs/properties/<propertyId>/neighborhood-overview.md`
-
-### Knowledge Base Setup (Console)
-
-- Create a Knowledge Base and choose an embeddings model (e.g., Titan Embeddings G1 – Text).
-- Add the S3 data source pointing to your bucket/prefix and run an initial sync.
-- Set `KNOWLEDGE_BASE_ID` in the backend and restart.
 
 ### Frontend UX
 
