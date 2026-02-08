@@ -62,7 +62,7 @@ export default function PropertyAIChat({ propertyId }) {
             <div style={{ whiteSpace: "pre-wrap" }}>{answer}</div>
           </div>
         )}
-        {citations && citations.length > 0 && (
+        {/* {citations && citations.length > 0 && (
           <div className="mt-3">
             <div className="fw-bold mb-1">Sources</div>
             <ul className="mb-0">
@@ -77,7 +77,7 @@ export default function PropertyAIChat({ propertyId }) {
               ))}
             </ul>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

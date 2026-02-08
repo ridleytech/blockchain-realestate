@@ -1,0 +1,21 @@
+{
+    "success": true,
+    "answer": "Based on the appraisal information provided:\n\nThe appraised value of the property is $420,000 USD as of January 9, 2025.\n\nKey adjustments considered in the appraisal were:\n1. Lot size\n2. Interior finishes\n3. Age of the property compared to renovated comparable properties\n\nThe appraisal methodology used was Sales Comparison, with 4 comparable properties considered. The appraiser noted moderate confidence in the valuation.\n\nIt's worth noting that the appraisal highlights steady demand for 4-bedroom homes in this family-oriented submarket, which could be a positive factor for potential investors.",
+    "citations": [
+        {
+            "source": "s3://realestate-rag-docs/properties/695dbbe7f04943cd4f11600c/appraisal-summary.txt"
+        },
+        {
+            "source": "s3://realestate-rag-docs/properties/695dbbe7f04943cd4f11600c/inspection-summary.txt"
+        },
+        {
+            "source": "s3://realestate-rag-docs/properties/695dbbe7f04943cd4f11600c/comps-overview.md"
+        }
+    ]
+}
+
+{
+  "success": true,
+  "answer": "I apologize, but I don't have specific information about key risks or recent maintenance for this property based on the data provided. The property details given do not include a risk assessment or maintenance history. \n\nWhat I can tell you based on the available information is:\n\n1. The property is a relatively new construction, built in 2012, which may imply less immediate maintenance needs compared to older homes.\n\n2. It's a 4-bedroom, 2.5-bathroom house with 2,950 square feet of living space.\n\n3. The property is currently listed for sale at $415,000.\n\n4. It's located in Porter, TX.\n\nFor a comprehensive understanding of risks and recent maintenance, you would need to request additional information such as a property inspection report, maintenance records, and local market analysis. These details are crucial for making an informed investment decision but are not included in the current property data.",
+  "citations": []
+}
