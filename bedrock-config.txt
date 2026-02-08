@@ -1,0 +1,19 @@
+
+
+Knowledge Base name
+realestate-rag-knowledge-base-s3
+
+Knowledge Base ID
+TCQ9IKJ5RY
+
+Service role
+AmazonBedrockExecutionRoleForKnowledgeBase_RealEstateRAG
+
+Data source name
+knowledge-base-realestate-rag-data-source
+
+Account ID
+521503643683 (this account)
+
+S3 URI
+s3://realestate-rag-docs 

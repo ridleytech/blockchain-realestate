@@ -15,7 +15,7 @@ import { FaHome, FaDollarSign, FaChartPie, FaPlus } from "react-icons/fa";
 import { getFractionalTokenContract } from "../utils/blockchain";
 import Web3 from "web3";
 
-const web3 = new Web3(window.ethereum);
+const web3 = window.ethereum ? new Web3(window.ethereum) : null;
 
 const PropertyList = () => {
   const [properties, setProperties] = useState([]);
@@ -66,9 +66,9 @@ const PropertyList = () => {
   // Fetch remaining shares from the blockchain with proper decimal handling
   const fetchRemainingShares = async (property) => {
     if (!property.fractionalToken) return property;
+    if (!web3) return property;
 
     try {
-      setLoadingShares(true);
       const contract = getFractionalTokenContract(property.fractionalToken);
 
       // Get contract balance and decimals in parallel
@@ -100,7 +100,7 @@ const PropertyList = () => {
       console.error(`Error fetching shares for property ${property._id}:`, err);
       return property; // Return property as is if there's an error
     } finally {
-      setLoadingShares(false);
+      // Best-effort enrichment; do not block UI on chain calls.
     }
   };
 
@@ -109,15 +109,14 @@ const PropertyList = () => {
     if (properties.length > 0) {
       const updatePropertiesWithShares = async () => {
         try {
-          setLoadingShares(true);
           const updatedProperties = await Promise.all(
-            properties.map(fetchRemainingShares)
+            properties.map(fetchRemainingShares),
           );
           setProperties(updatedProperties);
         } catch (err) {
           console.error("Error updating properties with shares:", err);
         } finally {
-          setLoadingShares(false);
+          // Best-effort enrichment; do not block UI on chain calls.
         }
       };
 
@@ -125,7 +124,7 @@ const PropertyList = () => {
     }
   }, [JSON.stringify(properties.map((p) => p._id))]); // Only run when property IDs change
 
-  if (loading || loadingShares) {
+  if (loading) {
     return (
       <div className="d-flex justify-content-center my-5">
         <Spinner animation="border" role="status">
@@ -285,8 +284,8 @@ const PropertyList = () => {
             {activeTab === "all"
               ? "No properties found"
               : activeTab === "listed"
-              ? "You have no property listings"
-              : "You have not invested in any properties yet"}
+                ? "You have no property listings"
+                : "You have not invested in any properties yet"}
           </h4>
           {activeTab !== "all" && (
             <Link to="/properties/new" className="btn btn-primary">
