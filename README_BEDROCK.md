@@ -79,7 +79,7 @@ address: "<Full Address>"
 
 1. Prerequisites
 
-- AWS Bedrock enabled in your region (e.g., `us-east-1`).
+- AWS Bedrock enabled in your region (e.g., `us-west-2`).
 - Permissions: `bedrock:InvokeModel`, `bedrock:Retrieve`, S3 read for your bucket.
 
 2. Document Layout
@@ -98,7 +98,7 @@ address: "<Full Address>"
 4. Configure Backend
 
 - Env vars:
-  - `AWS_REGION=us-east-1`
+  - `AWS_REGION=us-west-2`
   - `KNOWLEDGE_BASE_ID=<your_kb_id>`
   - Optional: `BEDROCK_MODEL_ID`, `BEDROCK_GUARDRAIL_ID`, `BEDROCK_GUARDRAIL_VERSION`
 - Install and run:
