@@ -15,14 +15,14 @@ const {
 function getBedrockClient() {
   return new BedrockRuntimeClient({
     region:
-      process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "us-east-1",
+      process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "us-west-2",
   });
 }
 
 function getKBClient() {
   return new BedrockAgentRuntimeClient({
     region:
-      process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "us-east-1",
+      process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "us-west-2",
   });
 }
 
@@ -59,6 +59,9 @@ function buildPropertyContext(property) {
 router.post("/ask", auth.protect, async (req, res) => {
   try {
     const { propertyId, question } = req.body || {};
+
+    const debugEnabled =
+      process.env.NODE_ENV === "development" && req.query.debug === "1";
 
     if (!propertyId || !question) {
       return res.status(400).json({
@@ -109,13 +112,17 @@ router.post("/ask", auth.protect, async (req, res) => {
     // Retrieve relevant documents from Bedrock Knowledge Bases if configured
     let retrievedSnippets = [];
     let citations = [];
+    let retrievalDebug;
     if (process.env.KNOWLEDGE_BASE_ID) {
       try {
         const kbClient = getKBClient();
+        const retrievalText = `Property ID: ${context.id}\nCity: ${
+          context?.address?.city || ""
+        }\nQuestion: ${trimmedQ}`;
         const retrieve = new RetrieveCommand({
           knowledgeBaseId: process.env.KNOWLEDGE_BASE_ID,
           retrievalQuery: {
-            text: `Property ID: ${context.id}\nCity: ${context?.address?.city || ""}\nQuestion: ${trimmedQ}`,
+            text: retrievalText,
           },
           retrievalConfiguration: {
             vectorSearchConfiguration: {
@@ -124,19 +131,39 @@ router.post("/ask", auth.protect, async (req, res) => {
           },
         });
         const retrieveRes = await kbClient.send(retrieve);
-        if (Array.isArray(retrieveRes.retrievedReferences)) {
-          retrievedSnippets = retrieveRes.retrievedReferences
-            .map((ref) => ref.content?.text)
-            .filter(Boolean);
-          citations = retrieveRes.retrievedReferences.map((ref) => ({
-            source:
-              (ref.location &&
-                ref.location.s3Location &&
-                ref.location.s3Location.uri) ||
-              ref.location?.type ||
-              "unknown",
-          }));
+
+        const retrievalResults = Array.isArray(retrieveRes?.retrievalResults)
+          ? retrieveRes.retrievalResults
+          : [];
+
+        if (debugEnabled) {
+          retrievalDebug = {
+            knowledgeBaseId: process.env.KNOWLEDGE_BASE_ID,
+            region:
+              process.env.AWS_REGION ||
+              process.env.AWS_DEFAULT_REGION ||
+              "us-west-2",
+            retrievalText,
+            retrievedReferencesCount: retrievalResults.length,
+            sources: retrievalResults.map((ref) => {
+              const uri = ref?.location?.s3Location?.uri;
+              return uri || ref?.location?.type || "unknown";
+            }),
+          };
+          console.log("KB retrieve debug:", JSON.stringify(retrievalDebug));
         }
+
+        retrievedSnippets = retrievalResults
+          .map((ref) => ref.content?.text)
+          .filter(Boolean);
+        citations = retrievalResults.map((ref) => ({
+          source:
+            (ref.location &&
+              ref.location.s3Location &&
+              ref.location.s3Location.uri) ||
+            ref.location?.type ||
+            "unknown",
+        }));
       } catch (kbErr) {
         console.warn(
           "Knowledge Base retrieval failed:",
@@ -199,7 +226,11 @@ router.post("/ask", auth.protect, async (req, res) => {
           .trim()
       : "";
 
-    return res.status(200).json({ success: true, answer, citations });
+    const responseBody = { success: true, answer, citations };
+    if (debugEnabled && retrievalDebug) {
+      responseBody.debug = { retrieval: retrievalDebug };
+    }
+    return res.status(200).json(responseBody);
   } catch (err) {
     console.error("/api/ai/ask error:", err);
     return res
