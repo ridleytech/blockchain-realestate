@@ -1,5 +1,10 @@
 # 🤖 AWS Bedrock RAG Testing Guide
 
+<div align="center">
+  <img src="assets/rag-screenshot.png" alt="AWS Bedrock RAG Screenshot" width="800" />
+  <p><em>Blockchain Real Estate Platform - Modern Web Interface</em></p>
+</div>
+
 > Quick Start
 >
 > 1. Upload docs to S3: `s3://realestate-rag-docs/properties/<propertyId>/...`

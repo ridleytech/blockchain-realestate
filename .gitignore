@@ -148,3 +148,4 @@ vite.config.ts.timestamp-*
 build
 backend/public/images
 README-bck.md
+bedrock-config.txt
