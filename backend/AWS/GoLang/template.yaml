@@ -6,6 +6,9 @@ Parameters:
   MongoDbUri:
     Type: String
     Default: "mongodb://localhost:27017/blockchain-real-estate"
+  AwsRegion:
+    Type: String
+    Default: "us-west-2"
   NodeEnv:
     Type: String
     Default: "development"
@@ -18,6 +21,18 @@ Parameters:
   JwtExpire:
     Type: String
     Default: "30d"
+  BedrockModelId:
+    Type: String
+    Default: "anthropic.claude-3-5-sonnet-20240620-v1:0"
+  KnowledgeBaseId:
+    Type: String
+    Default: ""
+  BedrockGuardrailId:
+    Type: String
+    Default: ""
+  BedrockGuardrailVersion:
+    Type: String
+    Default: ""
 
 Globals:
   Function:
@@ -28,11 +43,16 @@ Globals:
       - x86_64
     Environment:
       Variables:
+        AWS_REGION: !Ref AwsRegion
         MONGODB_URI: !Ref MongoDbUri
         NODE_ENV: !Ref NodeEnv
         CORS_ORIGIN: !Ref CorsOrigin
         JWT_SECRET: !Ref JwtSecret
         JWT_EXPIRE: !Ref JwtExpire
+        BEDROCK_MODEL_ID: !Ref BedrockModelId
+        KNOWLEDGE_BASE_ID: !Ref KnowledgeBaseId
+        BEDROCK_GUARDRAIL_ID: !Ref BedrockGuardrailId
+        BEDROCK_GUARDRAIL_VERSION: !Ref BedrockGuardrailVersion
 
 Resources:
   HttpApi:

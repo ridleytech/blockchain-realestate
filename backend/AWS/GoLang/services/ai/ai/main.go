@@ -25,9 +25,9 @@ import (
 )
 
 type askRequest struct {
-	Question string `json:"question"`
-	Prompt   string `json:"prompt"`
-	Message  string `json:"message"`
+	Question   string `json:"question"`
+	Prompt     string `json:"prompt"`
+	Message    string `json:"message"`
 	PropertyID string `json:"propertyId"`
 }
 
@@ -239,7 +239,6 @@ func handleAsk(ctx context.Context, req events.APIGatewayV2HTTPRequest) events.A
 
 	debugEnabled := os.Getenv("NODE_ENV") == "development" && req.QueryStringParameters["debug"] == "1"
 
-	// Load property
 	database, err := db.Database(ctx)
 	if err != nil {
 		status, b, _ := api.Error(http.StatusInternalServerError, "Database connection error")
@@ -276,13 +275,16 @@ func handleAsk(ctx context.Context, req events.APIGatewayV2HTTPRequest) events.A
 	}
 
 	modelID := os.Getenv("BEDROCK_MODEL_ID")
-	if modelID == "" {
-		modelID = "anthropic.claude-3-5-sonnet-20241022-v1:0"
+	modelCandidates := []string{}
+	if strings.TrimSpace(modelID) != "" {
+		modelCandidates = append(modelCandidates, strings.TrimSpace(modelID))
 	}
+	modelCandidates = append(modelCandidates,
+		"anthropic.claude-3-5-sonnet-20241022-v1:0",
+		"anthropic.claude-3-5-sonnet-20240620-v1:0",
+		"anthropic.claude-3-sonnet-20240229-v1:0",
+	)
 
-	// Knowledge Base retrieval is not implemented yet in Go.
-	// If you have KNOWLEDGE_BASE_ID configured, the Node backend will use it for RAG.
-	// We'll add parity after Bedrock Runtime is stable.
 	citations := []retrievalCitation{}
 	var retrievalDebug map[string]interface{}
 	kbContext := ""
@@ -317,9 +319,37 @@ func handleAsk(ctx context.Context, req events.APIGatewayV2HTTPRequest) events.A
 	invokeCtx, cancel := context.WithTimeout(ctx, 25*time.Second)
 	defer cancel()
 
-	answer, err := invokeClaude(invokeCtx, awsCfg, modelID, string(bedrockBodyJSON), guardrailID, guardrailVersion)
-	if err != nil {
-		fmt.Printf("ai ask: InvokeModel error: %v\n", err)
+	var answer string
+	var invokeErr error
+	attempts := make([]map[string]interface{}, 0, len(modelCandidates))
+	for i, mid := range modelCandidates {
+		answer, invokeErr = invokeClaude(invokeCtx, awsCfg, mid, string(bedrockBodyJSON), guardrailID, guardrailVersion)
+		if invokeErr == nil {
+			attempts = append(attempts, map[string]interface{}{"modelId": mid, "ok": true})
+			break
+		}
+		attempts = append(attempts, map[string]interface{}{"modelId": mid, "ok": false, "error": invokeErr.Error()})
+		fmt.Printf("ai ask: InvokeModel failed modelId=%s err=%v\n", mid, invokeErr)
+		if !isRetryableModelIDError(invokeErr) {
+			break
+		}
+		if i == len(modelCandidates)-1 {
+			break
+		}
+	}
+	if invokeErr != nil {
+		if os.Getenv("NODE_ENV") == "development" && debugEnabled {
+			resp := map[string]interface{}{
+				"success":  false,
+				"message":  invokeErr.Error(),
+				"debug": map[string]interface{}{
+					"attempts": attempts,
+					"region":   getAWSRegion(),
+				},
+			}
+			status, b, _ := api.JSON(http.StatusInternalServerError, resp)
+			return api.Response(status, b)
+		}
 		status, b, _ := api.Error(http.StatusInternalServerError, "AI service error")
 		return api.Response(status, b)
 	}
@@ -331,6 +361,12 @@ func handleAsk(ctx context.Context, req events.APIGatewayV2HTTPRequest) events.A
 	}
 	if debugEnabled && retrievalDebug != nil {
 		resp["debug"] = map[string]interface{}{"retrieval": retrievalDebug}
+	}
+	if debugEnabled {
+		resp["debug"] = map[string]interface{}{
+			"attempts": attempts,
+			"region":   getAWSRegion(),
+		}
 	}
 	status, b, _ := api.JSON(http.StatusOK, resp)
 	return api.Response(status, b)
