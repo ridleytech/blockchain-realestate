@@ -1,0 +1,189 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Go backend (Lambda + HTTP API)
+
+Parameters:
+  MongoDbUri:
+    Type: String
+    Default: "mongodb://localhost:27017/blockchain-real-estate"
+  AwsRegion:
+    Type: String
+    Default: "us-west-2"
+  NodeEnv:
+    Type: String
+    Default: "development"
+  CorsOrigin:
+    Type: String
+    Default: "http://localhost:3000"
+  JwtSecret:
+    Type: String
+    Default: ""
+  JwtExpire:
+    Type: String
+    Default: "30d"
+  BedrockModelId:
+    Type: String
+    Default: "anthropic.claude-3-5-sonnet-20240620-v1:0"
+  KnowledgeBaseId:
+    Type: String
+    Default: ""
+  BedrockGuardrailId:
+    Type: String
+    Default: ""
+  BedrockGuardrailVersion:
+    Type: String
+    Default: ""
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: go1.x
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        AWS_REGION: !Ref AwsRegion
+        MONGODB_URI: !Ref MongoDbUri
+        NODE_ENV: !Ref NodeEnv
+        CORS_ORIGIN: !Ref CorsOrigin
+        JWT_SECRET: !Ref JwtSecret
+        JWT_EXPIRE: !Ref JwtExpire
+        BEDROCK_MODEL_ID: !Ref BedrockModelId
+        KNOWLEDGE_BASE_ID: !Ref KnowledgeBaseId
+        BEDROCK_GUARDRAIL_ID: !Ref BedrockGuardrailId
+        BEDROCK_GUARDRAIL_VERSION: !Ref BedrockGuardrailVersion
+
+Resources:
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - !Ref CorsOrigin
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: services/auth/
+      Handler: auth
+      Events:
+        Register:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/auth/register
+            Method: POST
+        Login:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/auth/login
+            Method: POST
+        Me:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/auth/me
+            Method: GET
+
+  PropertiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: services/properties/
+      Handler: properties
+      Events:
+        GetAll:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/properties
+            Method: GET
+        Create:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/properties
+            Method: POST
+        GetOne:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/properties/{id}
+            Method: GET
+        Update:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/properties/{id}
+            Method: PUT
+        Delete:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/properties/{id}
+            Method: DELETE
+        MeListed:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/properties/me/listed
+            Method: GET
+        MeOwned:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/properties/me/owned
+            Method: GET
+
+  AIFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: services/ai/
+      Handler: ai
+      Events:
+        Ask:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/ai/ask
+            Method: POST
+
+  PurchaseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: services/purchase/
+      Handler: purchase
+      Events:
+        GetByProperty:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/purchase/property/{id}
+            Method: GET
+        Create:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/purchase
+            Method: POST
+        CreateWithSlash:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/purchase/
+            Method: POST
+
+Outputs:
+  ApiUrl:
+    Description: HTTP API endpoint URL
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"

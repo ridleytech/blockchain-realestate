@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_BASE_URL } from "../config/api";
 
 export default function PropertyAIChat({ propertyId }) {
   const [question, setQuestion] = useState("");
@@ -15,7 +16,7 @@ export default function PropertyAIChat({ propertyId }) {
     setCitations([]);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:4000/api/ai/ask", {
+      const res = await fetch(`${API_BASE_URL}/api/ai/ask`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

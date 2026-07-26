@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config/api";
 import {
   Container,
   Row,
@@ -60,9 +61,7 @@ const PropertyDetail = () => {
         setError(null);
 
         // First fetch the property data
-        const propertyRes = await fetch(
-          `http://localhost:4000/api/properties/${id}`,
-        );
+        const propertyRes = await fetch(`${API_BASE_URL}/api/properties/${id}`);
         if (!propertyRes.ok) {
           throw new Error(
             `Failed to fetch property: ${propertyRes.statusText}`,
@@ -134,7 +133,7 @@ const PropertyDetail = () => {
         // Then fetch transactions
         try {
           const transactionsRes = await fetch(
-            `http://localhost:4000/api/purchase/property/${id}`,
+            `${API_BASE_URL}/api/purchase/property/${id}`,
           );
           if (transactionsRes.ok) {
             const transactionsData = await transactionsRes.json();
@@ -226,7 +225,7 @@ const PropertyDetail = () => {
 
       // Record the transaction in our database
       const response = await axios.post(
-        "http://localhost:4000/api/purchase/",
+        `${API_BASE_URL}/api/purchase/`,
         {
           propertyId: id,
           shares,

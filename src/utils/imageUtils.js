@@ -1,5 +1,4 @@
-// Base URL for API requests
-const API_BASE_URL = "http://localhost:4000";
+import { API_BASE_URL } from "../config/api";
 
 // Default placeholder image (base64 encoded SVG)
 const PLACEHOLDER_IMAGE =
@@ -38,7 +37,7 @@ export const getImageUrl = (image) => {
   }
 
   // Construct the full URL
-  return `${API_BASE_URL}/images/${imagePath}`;
+  return `${API_BASE_URL}/${imagePath}`;
 };
 
 /**

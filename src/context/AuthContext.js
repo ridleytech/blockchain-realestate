@@ -1,12 +1,27 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { API_BASE_URL } from "../config/api";
 
-const API_URL = "http://localhost:4000";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const normalizeUser = (userData) => {
+    if (!userData) return null;
+
+    const id = userData._id || userData.id;
+    if (!id) return null;
+
+    return {
+      id,
+      name: userData.name,
+      email: userData.email,
+      walletAddress: userData.walletAddress,
+      role: userData.role || "user",
+    };
+  };
 
   const checkAuth = async () => {
     console.log("Starting auth check...");
@@ -22,13 +37,13 @@ export const AuthProvider = ({ children }) => {
       }
 
       console.log("Verifying token with backend...");
-      const response = await fetch(`${API_URL}/api/auth/me`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
+        credentials: "omit",
         mode: "cors",
       });
 
@@ -42,15 +57,10 @@ export const AuthProvider = ({ children }) => {
         const userData = responseData.data;
         console.log("User data from /me:", userData);
 
-        if (userData && userData._id) {
-          console.log("Setting current user:", userData.email);
-          setCurrentUser({
-            id: userData._id,
-            name: userData.name,
-            email: userData.email,
-            walletAddress: userData.walletAddress,
-            role: userData.role || "user",
-          });
+        const normalized = normalizeUser(userData);
+        if (normalized) {
+          console.log("Setting current user:", normalized.email);
+          setCurrentUser(normalized);
         } else {
           console.error("Invalid user data received:", userData);
           console.log("Removing invalid token from localStorage");
@@ -61,7 +71,7 @@ export const AuthProvider = ({ children }) => {
         const errorText = await response.text();
         console.error(
           `Failed to verify token (${response.status}):`,
-          errorText
+          errorText,
         );
         console.log("Removing token due to verification failure");
         localStorage.removeItem("token");
@@ -87,13 +97,13 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       console.log("Attempting to log in with:", { email });
 
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-        credentials: "include",
+        credentials: "omit",
         mode: "cors",
       });
 
@@ -126,17 +136,24 @@ export const AuthProvider = ({ children }) => {
       // Get the user data from the response or fetch it
       let userData = data.user || data.data?.user;
 
+      const normalizedFromLogin = normalizeUser(userData);
+      if (normalizedFromLogin) {
+        setCurrentUser(normalizedFromLogin);
+        console.log("User set in context:", normalizedFromLogin);
+        return { success: true, user: normalizedFromLogin };
+      }
+
       // If we don't have complete user data, fetch it
-      if (!userData || !userData._id) {
+      if (!userData) {
         console.log("Fetching user data from /me endpoint");
         try {
-          const userResponse = await fetch(`${API_URL}/api/auth/me`, {
+          const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            credentials: "include",
+            credentials: "omit",
             mode: "cors",
           });
 
@@ -156,17 +173,11 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Set the current user with the retrieved data
-      if (userData && userData._id) {
-        const user = {
-          id: userData._id,
-          name: userData.name,
-          email: userData.email,
-          walletAddress: userData.walletAddress,
-          role: userData.role || "user",
-        };
-        setCurrentUser(user);
-        console.log("User set in context:", user);
-        return { success: true, user };
+      const normalizedFromMe = normalizeUser(userData);
+      if (normalizedFromMe) {
+        setCurrentUser(normalizedFromMe);
+        console.log("User set in context:", normalizedFromMe);
+        return { success: true, user: normalizedFromMe };
       } else {
         throw new Error("Failed to load user data");
       }
@@ -180,7 +191,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setError(null);
-      const response = await fetch(`${API_URL}/api/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -210,6 +221,10 @@ export const AuthProvider = ({ children }) => {
     setError(null);
   };
 
+  const clearError = () => {
+    setError(null);
+  };
+
   const value = {
     currentUser,
     login,
@@ -217,14 +232,11 @@ export const AuthProvider = ({ children }) => {
     logout,
     loading,
     error,
+    clearError,
     checkAuth,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
