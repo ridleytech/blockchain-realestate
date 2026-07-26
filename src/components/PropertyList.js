@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { getFirstImage } from "../utils/imageUtils";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../config/api";
 import { FaHome, FaDollarSign, FaChartPie, FaPlus } from "react-icons/fa";
 import { getFractionalTokenContract } from "../utils/blockchain";
 import Web3 from "web3";
@@ -29,12 +30,12 @@ const PropertyList = () => {
     const fetchProperties = async () => {
       try {
         setLoading(true);
-        let url = "http://localhost:4000/api/properties";
+        let url = `${API_BASE_URL}/api/properties`;
 
         if (activeTab === "listed" && currentUser) {
-          url = "http://localhost:4000/api/properties/me/listed";
+          url = `${API_BASE_URL}/api/properties/me/listed`;
         } else if (activeTab === "owned" && currentUser) {
-          url = "http://localhost:4000/api/properties/me/owned";
+          url = `${API_BASE_URL}/api/properties/me/owned`;
         }
 
         const response = await fetch(url, {

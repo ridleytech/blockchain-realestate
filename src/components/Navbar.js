@@ -73,27 +73,36 @@ const Navbar = () => {
                 </div>
               </div>
             ) : currentUser ? (
-              <NavDropdown
-                title={
-                  <>
-                    <i className="fas fa-user-circle me-1"></i>
-                    {currentUser.name || "Account"}
-                  </>
-                }
-                id="user-dropdown"
-                align="end"
-              >
-                <NavDropdown.Item as={Link} to="/profile">
-                  <i className="fas fa-user me-2"></i>Profile
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/my-properties">
-                  <i className="fas fa-home me-2"></i>My Properties
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item onClick={handleLogout}>
-                  <i className="fas fa-sign-out-alt me-2"></i>Logout
-                </NavDropdown.Item>
-              </NavDropdown>
+              <>
+                <NavDropdown
+                  title={
+                    <>
+                      <i className="fas fa-user-circle me-1"></i>
+                      {currentUser.name || "Account"}
+                    </>
+                  }
+                  id="user-dropdown"
+                  align="end"
+                >
+                  <NavDropdown.Item as={Link} to="/profile">
+                    <i className="fas fa-user me-2"></i>Profile
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/my-properties">
+                    <i className="fas fa-home me-2"></i>My Properties
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={handleLogout}>
+                    <i className="fas fa-sign-out-alt me-2"></i>Logout
+                  </NavDropdown.Item>
+                </NavDropdown>
+                <Button
+                  variant="outline-light"
+                  className="ms-2"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </>
             ) : (
               <>
                 <Button

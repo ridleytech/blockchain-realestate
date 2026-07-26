@@ -1,0 +1,10 @@
+version = 0.1
+
+[default]
+[default.build]
+[default.build.parameters]
+use_container = false
+
+[default.local_start_api]
+[default.local_start_api.parameters]
+parameter_overrides = "MongoDbUri=mongodb://host.docker.internal:27017/blockchain-real-estate NodeEnv=development CorsOrigin=http://localhost:3000 JwtSecret=dev-secret JwtExpire=30d"

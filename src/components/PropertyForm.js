@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 const PropertyForm = () => {
   const { id } = useParams();
@@ -122,7 +123,7 @@ const PropertyForm = () => {
       const fetchProperty = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:4000/api/properties/${id}`
+            `${API_BASE_URL}/api/properties/${id}`,
           );
           const property = response.data.data || response.data;
           setFormData((prev) => ({
@@ -219,8 +220,8 @@ const PropertyForm = () => {
     try {
       const method = isNew ? "post" : "put";
       const url = isNew
-        ? "http://localhost:4000/api/properties"
-        : `http://localhost:4000/api/properties/${id}`;
+        ? `${API_BASE_URL}/api/properties`
+        : `${API_BASE_URL}/api/properties/${id}`;
       const action = isNew ? "create" : "update";
 
       const response = await axios[method](
@@ -236,20 +237,20 @@ const PropertyForm = () => {
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
-        }
+        },
       );
 
       setSuccess(
         isNew
           ? "Property submitted for approval! It will be visible in your listings once approved. Redirecting..."
-          : "Property updated successfully!"
+          : "Property updated successfully!",
       );
 
       // Redirect to property detail page after successful creation
       if (isNew) {
         setTimeout(() => {
           navigate(
-            `/properties/${response.data.data._id || response.data._id}`
+            `/properties/${response.data.data._id || response.data._id}`,
           );
         }, 1500);
       }
